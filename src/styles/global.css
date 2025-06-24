@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+body{
+    margin : 0px 2rem;
+   
+}
+
+.app-header{
+
+    border-bottom: 1px solid rgb(219, 216, 216);
+    min-height: 60px;
+
+}
+
+@media (max-width: 920px) {
+  /* CSS áp dụng khi màn hình nhỏ hơn hoặc bằng 768px */
+    body{
+    margin : 0px 20px;
+   
+}
+
+  .app-header {
+    max-height: 60px;
+  }
+}
+
+
+.mobile-header-content{
+    width: 100%;
+}
