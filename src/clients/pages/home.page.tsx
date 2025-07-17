@@ -5,7 +5,6 @@ import FeaturedCourseList from "../components/FeaturedCourse/FeatureCourseList";
 export function HomePage() {
 
 
-
   return (
     <>
       <Breadcrumb

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, List } from 'antd';
 
+
 const data = [
     {
         title: 'Title 1',
@@ -15,6 +16,9 @@ const data = [
         title: 'Title 4',
     },
 ];
+
+
+
 
 const FeaturedCourseList: React.FC = () => {
     return (
