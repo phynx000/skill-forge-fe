@@ -1,0 +1,21 @@
+.list-course-header {
+    margin: 20px 0;
+    max-width: 100%;
+    
+    .header-title {
+        font-size: 40px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .header-description{
+        font-size: 20px;
+        color: #666;
+        margin-bottom: 20px;
+    }
+    
+   .course-tabs .ant-tabs-tab {
+    font-size: 20px;    
+    font-weight: 500;
+}
+}

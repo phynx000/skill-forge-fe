@@ -1,70 +1,39 @@
-import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
-import { Avatar, List, Space } from 'antd';
-import React from 'react';
+import { Button, Col, Row, Space } from "antd";
+import ListCourse from "../components/Course/ListCourse";
+import ListFilter from "../components/Filter/ListFilter";
+import "./listCoursePage.scss";
+import ListCourseHeader from "../components/Course/ListCourseHeader";
+import FilterOutlined from "@ant-design/icons/lib/icons/FilterOutlined";
 
-
-const data = Array.from({ length: 23 }).map((_, i) => ({
-    href: 'https://ant.design',
-    title: `ant design part ${i}`,
-    avatar: `https://api.dicebear.com/7.x/miniavs/svg?seed=${i}`,
-    description:
-        'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-    content:
-        'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-}));
-
-const IconText = ({ icon, text }: { icon: React.FC; text: string }) => (
-    <Space>
-        {React.createElement(icon)}
-        {text}
-    </Space>
-);
-
-const ListCourse: React.FC = () => {
+const ListCoursePage: React.FC = () => {
     return (
-        <>
-            <List
-                itemLayout="vertical"
-                size="large"
-                pagination={{
-                    onChange: (page) => {
-                        console.log(page);
-                    },
-                    pageSize: 3,
-                }}
-                dataSource={data}
-                footer={
-                    <div>
-                        <b>ant design</b> footer part
-                    </div>
-                }
-                renderItem={(item) => (
-                    <List.Item
-                        key={item.title}
-                        actions={[
-                            <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
-                            <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
-                            <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
-                        ]}
-                        extra={
-                            <img
-                                width={272}
-                                alt="logo"
-                                src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-                            />
-                        }
-                    >
-                        <List.Item.Meta
-                            avatar={<Avatar src={item.avatar} />}
-                            title={<a href={item.href}>{item.title}</a>}
-                            description={item.description}
-                        />
-                        {item.content}
-                    </List.Item>
-                )}
-            />
+        <div className="list-course-page-container">
+            <Row>
+                <Col span={24}>
+                    <ListCourseHeader />
+                </Col>
+            </Row>
+            <Row>
+                <Button>
+                    <FilterOutlined />
+                    <span>Bộ lọc</span>
+                </Button>
+                <Button>
+                    <span>Sắp xếp theo</span>
+                    
+                </Button>
+            </Row>
 
-        </>);
+            <Row gutter={16} className="list-course-page">
+                <Col span={6}>
+                    <ListFilter />
+                </Col>
+                <Col span={18}>
+                    <ListCourse />
+                </Col>
+            </Row>
+        </div>
+    );
 }
 
-export default ListCourse;
+export default ListCoursePage;
