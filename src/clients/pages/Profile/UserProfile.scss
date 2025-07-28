@@ -1,0 +1,622 @@
+.user-profile-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 24px 0;
+
+  .profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+
+    @media (max-width: 768px) {
+      padding: 0 16px;
+    }
+  }
+
+  .profile-header {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+    border: none !important;
+
+    .profile-avatar {
+      text-align: center;
+
+      .ant-avatar {
+        border: 4px solid #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .profile-info {
+      .profile-name-section {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        @media (max-width: 576px) {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .ant-typography {
+          margin: 0 !important;
+        }
+      }
+
+      .ant-space {
+        flex-wrap: wrap;
+      }
+    }
+  }
+
+  .stat-card {
+    text-align: center;
+    border-radius: 8px !important;
+    transition: all 0.3s ease;
+    border: none !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .ant-statistic {
+      .ant-statistic-title {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 8px;
+      }
+
+      .ant-statistic-content {
+        font-size: 20px;
+        font-weight: 600;
+
+        .ant-statistic-content-prefix {
+          margin-right: 8px;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  .activity-card,
+  .progress-card {
+    border-radius: 8px !important;
+    border: none !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+    height: 100%;
+
+    .ant-card-head {
+      border-bottom: 1px solid #f0f0f0;
+
+      .ant-card-head-title {
+        font-weight: 600;
+        color: #262626;
+      }
+    }
+
+    .ant-card-body {
+      padding: 20px;
+    }
+  }
+
+  .activity-item {
+    margin-bottom: 8px;
+
+    .ant-typography {
+      margin: 0;
+    }
+  }
+
+  .profile-courses {
+    .course-card {
+      border-radius: 8px !important;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: none !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15) !important;
+      }
+
+      .ant-card-cover {
+        img {
+          height: 150px;
+          object-fit: cover;
+        }
+      }
+
+      .ant-card-meta {
+        .ant-card-meta-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: #262626;
+          margin-bottom: 8px;
+        }
+
+        .ant-card-meta-description {
+          .ant-progress {
+            margin-top: 4px;
+          }
+
+          .ant-rate {
+            .ant-rate-star {
+              margin-right: 2px;
+            }
+          }
+        }
+      }
+
+      .ant-card-actions {
+        background: #fafafa;
+        border-top: 1px solid #f0f0f0;
+
+        li {
+          margin: 8px 0;
+
+          .ant-btn {
+            border: none;
+            box-shadow: none;
+            font-weight: 500;
+
+            &.ant-btn-primary {
+              background: #c800de;
+              border-color: #c800de;
+
+              &:hover {
+                background: #a000b8;
+                border-color: #a000b8;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .profile-certificates {
+    .certificate-card {
+      border-radius: 8px !important;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: none !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15) !important;
+      }
+
+      .certificate-preview {
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+      }
+
+      .ant-card-meta {
+        .ant-card-meta-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: #262626;
+        }
+
+        .ant-card-meta-description {
+          font-size: 12px;
+        }
+      }
+
+      .ant-card-actions {
+        background: #fafafa;
+        border-top: 1px solid #f0f0f0;
+
+        li {
+          margin: 4px 0;
+
+          .ant-btn {
+            border: none;
+            box-shadow: none;
+            font-weight: 500;
+            font-size: 12px;
+            height: 28px;
+            padding: 0 12px;
+
+            &.ant-btn-primary {
+              background: #c800de;
+              border-color: #c800de;
+
+              &:hover {
+                background: #a000b8;
+                border-color: #a000b8;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .ant-tabs {
+    .ant-tabs-tab {
+      font-weight: 500;
+      padding: 12px 24px;
+
+      &.ant-tabs-tab-active {
+        .ant-tabs-tab-btn {
+          color: #c800de;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .ant-tabs-ink-bar {
+      background: #c800de;
+    }
+
+    .ant-tabs-content-holder {
+      padding-top: 24px;
+    }
+  }
+
+  .ant-timeline {
+    .ant-timeline-item {
+      .ant-timeline-item-content {
+        margin-left: 20px;
+      }
+
+      .ant-timeline-item-dot {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+
+  .ant-tag {
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+    border: none;
+  }
+
+  .ant-progress {
+    .ant-progress-bg {
+      background: #c800de !important;
+    }
+  }
+
+  .ant-rate {
+    .ant-rate-star {
+      &.ant-rate-star-focused,
+      &.ant-rate-star-full {
+        .ant-rate-star-first,
+        .ant-rate-star-second {
+          color: #faad14;
+        }
+      }
+    }
+  }
+
+  .ant-empty {
+    margin: 40px 0;
+
+    .ant-empty-description {
+      color: #999;
+    }
+  }
+
+  // Instructor specific styles
+  &.instructor-profile {
+    .profile-header {
+      .profile-avatar {
+        position: relative;
+        
+        .ant-badge {
+          .ant-ribbon {
+            top: 10px;
+            right: -5px;
+          }
+        }
+      }
+    }
+
+    .quick-actions-card {
+      border-radius: 8px !important;
+      border: none !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+
+      .ant-card-head-title {
+        font-weight: 600;
+        color: #262626;
+      }
+
+      .ant-space {
+        width: 100%;
+        justify-content: center;
+
+        @media (max-width: 768px) {
+          .ant-btn {
+            flex: 1;
+            min-width: 120px;
+          }
+        }
+      }
+    }
+
+    .instructor-course-card {
+      .ant-badge {
+        .ant-ribbon {
+          top: 10px;
+          right: 10px;
+        }
+      }
+
+      .ant-card-actions {
+        li {
+          .ant-btn {
+            width: 100%;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+      }
+    }
+
+    .reviews-card,
+    .earnings-card {
+      .ant-list-item {
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+    }
+
+    .instructor-reviews {
+      .ant-table {
+        .ant-table-thead > tr > th {
+          background: #fafafa;
+          font-weight: 600;
+        }
+
+        .ant-table-tbody > tr:hover > td {
+          background: #f5f5f5;
+        }
+      }
+    }
+  }
+
+  // Responsive Design
+  @media (max-width: 992px) {
+    .profile-container {
+      .profile-header {
+        .profile-info {
+          text-align: center;
+          margin-top: 16px;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px 0;
+
+    .profile-container {
+      .profile-header {
+        .ant-card-body {
+          padding: 16px;
+        }
+
+        .profile-info {
+          .profile-name-section {
+            .ant-typography {
+              font-size: 20px !important;
+            }
+          }
+        }
+      }
+
+      .stat-card {
+        .ant-statistic {
+          .ant-statistic-content {
+            font-size: 18px;
+          }
+        }
+      }
+
+      .ant-tabs {
+        .ant-tabs-tab {
+          padding: 8px 16px;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    .profile-container {
+      .stat-card {
+        .ant-statistic {
+          .ant-statistic-title {
+            font-size: 11px;
+          }
+
+          .ant-statistic-content {
+            font-size: 16px;
+
+            .ant-statistic-content-prefix {
+              font-size: 14px;
+            }
+          }
+        }
+      }
+
+      .course-card {
+        .ant-card-meta {
+          .ant-card-meta-title {
+            font-size: 14px;
+          }
+
+          .ant-card-meta-description {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Profile Type Selection Page
+.profile-type-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+
+  .profile-type-container {
+    max-width: 800px;
+    width: 100%;
+  }
+
+  .profile-type-header {
+    margin-bottom: 40px;
+
+    .ant-typography {
+      margin: 0;
+    }
+  }
+
+  .profile-type-card {
+    border-radius: 16px !important;
+    border: 2px solid transparent !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer;
+    height: 100%;
+    overflow: hidden;
+
+    &:hover {
+      transform: translateY(-5px);
+      border-color: #c800de !important;
+      box-shadow: 0 10px 40px rgba(200, 0, 222, 0.2) !important;
+    }
+
+    &.student-card {
+      background: linear-gradient(135deg, #e6f7ff 0%, #f0f9ff 100%);
+
+      .card-icon {
+        background: linear-gradient(135deg, #1890ff, #40a9ff);
+        color: white;
+      }
+
+      &:hover {
+        border-color: #1890ff !important;
+        box-shadow: 0 10px 40px rgba(24, 144, 255, 0.2) !important;
+      }
+    }
+
+    &.instructor-card {
+      background: linear-gradient(135deg, #f6ffed 0%, #f9ffeb 100%);
+
+      .card-icon {
+        background: linear-gradient(135deg, #c800de, #e040ff);
+        color: white;
+      }
+
+      &:hover {
+        border-color: #c800de !important;
+        box-shadow: 0 10px 40px rgba(200, 0, 222, 0.2) !important;
+      }
+    }
+
+    .card-content {
+      text-align: center;
+      padding: 20px;
+
+      .card-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 36px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 24px 0;
+        text-align: left;
+
+        li {
+          margin-bottom: 8px;
+          font-size: 14px;
+          color: #666;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+      }
+
+      .view-profile-btn {
+        background: #c800de !important;
+        border-color: #c800de !important;
+        font-weight: 600;
+        height: 44px;
+
+        &:hover {
+          background: #a000b8 !important;
+          border-color: #a000b8 !important;
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 20px;
+
+    .profile-type-header {
+      margin-bottom: 30px;
+
+      .ant-typography h2 {
+        font-size: 20px;
+      }
+    }
+
+    .profile-type-card {
+      .card-content {
+        padding: 16px;
+
+        .card-icon {
+          width: 60px;
+          height: 60px;
+          font-size: 28px;
+          margin-bottom: 16px;
+        }
+
+        .ant-typography h4 {
+          font-size: 16px;
+        }
+
+        .feature-list {
+          li {
+            font-size: 13px;
+          }
+        }
+      }
+    }
+  }
+}

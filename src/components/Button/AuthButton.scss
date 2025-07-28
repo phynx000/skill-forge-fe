@@ -1,3 +1,29 @@
-.text-auth{
-    font-weight: 500 ;
+.text-auth {
+    font-weight: 500;
+}
+
+.auth-buttons {
+    .auth-login-btn {
+        background-color: #c800de !important;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: #a000b8 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(200, 0, 222, 0.3);
+        }
+    }
+
+    .auth-register-btn {
+        border-color: #c800de !important;
+        color: #c800de !important;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: rgba(200, 0, 222, 0.1) !important;
+            border-color: #a000b8 !important;
+            color: #a000b8 !important;
+            transform: translateY(-2px);
+        }
+    }
 }

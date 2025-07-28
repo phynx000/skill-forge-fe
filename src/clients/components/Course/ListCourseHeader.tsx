@@ -1,8 +1,8 @@
-import type React from "react";
+import React from "react";
 import { Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import './ListCourseHeader.scss';
-
+import CourseGridList from "./CourseGridList";
 
 const ListCourseHeader: React.FC = () => {
 
@@ -12,19 +12,19 @@ const ListCourseHeader: React.FC = () => {
 
     const items: TabsProps['items'] = [
         {
-            key: '1',
+            key: 'popular',
             label: 'Phổ biến nhất',
-            children: 'Content of Tab Pane 1',
+            children: <CourseGridList filterType="popular" showControls={false} />,
         },
         {
-            key: '2',
+            key: 'featured',
+            label: 'Nổi bật',
+            children: <CourseGridList filterType="featured" showControls={false} />,
+        },
+        {
+            key: 'new',
             label: 'Mới',
-            children: 'Content of Tab Pane 2',
-        },
-        {
-            key: '3',
-            label: 'Thịnh hành',
-            children: 'Content of Tab Pane 3',
+            children: <CourseGridList filterType="new" showControls={false} />,
         },
     ];
 
@@ -33,7 +33,7 @@ const ListCourseHeader: React.FC = () => {
             <h1 className="header-title">Khóa học</h1>
             <p className="header-description">Khám phá nhiều khóa học của chúng tôi để nâng cao kỹ năng và kiến thức của bạn.</p>
             <Tabs
-                defaultActiveKey="1"
+                defaultActiveKey="popular"
                 items={items}
                 onChange={onChange}
                 className="course-tabs"

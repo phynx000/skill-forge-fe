@@ -1,0 +1,288 @@
+.create-course-page {
+  padding: 0;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.breadcrumb-container {
+  padding: 16px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  
+  .ant-breadcrumb {
+    font-size: 14px;
+    
+    .ant-breadcrumb-link {
+      color: #666;
+      
+      &:hover {
+        color: #1890ff;
+      }
+    }
+    
+    .anticon {
+      margin-right: 4px;
+    }
+  }
+}
+
+.page-header {
+  padding: 32px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  text-align: center;
+  
+  h2 {
+    margin-bottom: 8px;
+    color: #262626;
+    font-weight: 600;
+  }
+  
+  .ant-typography {
+    color: #8c8c8c;
+    font-size: 16px;
+  }
+}
+
+.steps-container {
+  padding: 32px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  
+  .ant-steps {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
+
+.form-container {
+  padding: 32px 24px;
+  
+  .form-card {
+    max-width: 800px;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    
+    .ant-card-body {
+      padding: 32px;
+    }
+  }
+  
+  .ant-form-item-label > label {
+    font-weight: 600;
+    color: #262626;
+  }
+  
+  .ant-input,
+  .ant-select-selector,
+  .ant-input-number {
+    border-radius: 8px;
+    
+    &:hover {
+      border-color: #1890ff;
+    }
+    
+    &:focus,
+    &.ant-input-focused,
+    &.ant-select-focused .ant-select-selector {
+      border-color: #1890ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+  }
+  
+  .ant-upload-select-picture-card {
+    width: 200px;
+    height: 150px;
+    border-radius: 8px;
+    border: 2px dashed #d9d9d9;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      border-color: #1890ff;
+    }
+  }
+  
+  .ant-upload-list-picture-card {
+    .ant-upload-list-item {
+      border-radius: 8px;
+    }
+  }
+}
+
+.preview-content {
+  .preview-card {
+    .ant-card-head {
+      background: #fafafa;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    
+    .course-preview {
+      .no-image {
+        height: 200px;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        color: #8c8c8c;
+        font-style: italic;
+      }
+      
+      h4 {
+        color: #262626;
+        margin-bottom: 12px;
+        line-height: 1.4;
+      }
+      
+      .ant-typography {
+        line-height: 1.6;
+      }
+    }
+  }
+}
+
+.actions-container {
+  padding: 24px;
+  background: #fff;
+  border-top: 1px solid #e8e8e8;
+  text-align: center;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  
+  .ant-btn {
+    border-radius: 8px;
+    font-weight: 500;
+    
+    &.ant-btn-primary {
+      background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+      border: none;
+      box-shadow: 0 2px 4px rgba(24, 144, 255, 0.4);
+      
+      &:hover {
+        background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+        box-shadow: 0 4px 8px rgba(24, 144, 255, 0.6);
+      }
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .create-course-page {
+    .breadcrumb-container {
+      padding: 12px 16px;
+    }
+    
+    .page-header {
+      padding: 24px 16px;
+      
+      h2 {
+        font-size: 24px;
+      }
+      
+      .ant-typography {
+        font-size: 14px;
+      }
+    }
+    
+    .steps-container {
+      padding: 24px 16px;
+      
+      .ant-steps {
+        .ant-steps-item-title {
+          font-size: 14px;
+        }
+        
+        .ant-steps-item-description {
+          display: none;
+        }
+      }
+    }
+    
+    .form-container {
+      padding: 16px;
+      
+      .form-card .ant-card-body {
+        padding: 20px;
+      }
+    }
+    
+    .actions-container {
+      padding: 16px;
+      
+      .ant-space {
+        width: 100%;
+        
+        .ant-btn {
+          flex: 1;
+        }
+      }
+    }
+  }
+  
+  .preview-content .course-preview .no-image {
+    height: 150px;
+  }
+}
+
+@media (max-width: 576px) {
+  .create-course-page {
+    .steps-container .ant-steps {
+      .ant-steps-item-title {
+        font-size: 12px;
+      }
+    }
+    
+    .form-container .ant-upload-select-picture-card {
+      width: 100%;
+      height: 120px;
+    }
+    
+    .actions-container .ant-space {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      
+      .ant-btn {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+    }
+  }
+}
+
+/* Form validation styles */
+.ant-form-item-has-error {
+  .ant-input,
+  .ant-select-selector,
+  .ant-input-number {
+    border-color: #ff4d4f;
+    
+    &:hover {
+      border-color: #ff4d4f;
+    }
+    
+    &:focus,
+    &.ant-input-focused {
+      border-color: #ff4d4f;
+      box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+    }
+  }
+}
+
+/* Success states */
+.ant-form-item-has-success {
+  .ant-input,
+  .ant-select-selector,
+  .ant-input-number {
+    border-color: #52c41a;
+  }
+}
+
+/* Loading states */
+.ant-btn-loading {
+  pointer-events: none;
+  opacity: 0.6;
+}

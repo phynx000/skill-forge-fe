@@ -1,0 +1,260 @@
+// VideoTestPage.scss
+.video-test-page {
+  padding: 24px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .ant-typography h2 {
+    color: #262626;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .input-card,
+  .samples-card,
+  .player-card,
+  .info-card {
+    margin-bottom: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f0f0f0;
+
+    .ant-card-head {
+      background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+      border-bottom: 1px solid #e8e8e8;
+      border-radius: 12px 12px 0 0;
+      
+      .ant-card-head-title {
+        font-weight: 600;
+        color: #262626;
+      }
+    }
+
+    .ant-card-body {
+      padding: 24px;
+    }
+  }
+
+  .input-card {
+    .ant-input {
+      border-radius: 8px;
+      border: 2px solid #d9d9d9;
+      font-family: 'Courier New', monospace;
+      
+      &:hover {
+        border-color: #40a9ff;
+      }
+      
+      &:focus {
+        border-color: #1890ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+    }
+
+    .ant-btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      height: 40px;
+      font-weight: 500;
+      
+      &:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+    }
+
+    .ant-btn:not(.ant-btn-primary) {
+      border-radius: 8px;
+      height: 40px;
+      
+      &:hover {
+        border-color: #40a9ff;
+        color: #40a9ff;
+      }
+    }
+
+    .ant-alert {
+      border-radius: 8px;
+      margin-top: 16px;
+    }
+  }
+
+  .samples-card {
+    .sample-url {
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border: 1px solid #e9ecef;
+      
+      &:hover {
+        background: #e3f2fd;
+        border-color: #1890ff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      transition: all 0.3s ease;
+
+      .ant-typography {
+        margin-bottom: 0;
+
+        &.ant-typography-code {
+          display: block;
+          margin: 8px 0;
+          padding: 8px;
+          background: #ffffff;
+          border: 1px solid #d9d9d9;
+          border-radius: 4px;
+          word-break: break-all;
+          white-space: pre-wrap;
+          max-width: 100%;
+        }
+      }
+
+      .ant-btn-link {
+        padding: 4px 12px;
+        height: auto;
+        font-size: 12px;
+        margin-top: 8px;
+        
+        &:hover {
+          background: rgba(24, 144, 255, 0.1);
+          border-radius: 4px;
+        }
+      }
+    }
+  }
+
+  .player-card {
+    .video-player-card {
+      box-shadow: none;
+      border: none;
+    }
+  }
+
+  .info-card {
+    .ant-space {
+      width: 100%;
+    }
+
+    ul {
+      margin: 8px 0 16px 20px;
+      padding: 0;
+
+      li {
+        margin-bottom: 4px;
+        color: #595959;
+        line-height: 1.5;
+      }
+    }
+
+    .ant-typography {
+      &.ant-typography-code {
+        background: #f6f8fa;
+        border: 1px solid #e1e4e8;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 12px;
+        color: #d73a49;
+        font-family: 'Courier New', monospace;
+      }
+    }
+  }
+
+  // Responsive design
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .container {
+      padding: 0;
+    }
+
+    .input-card,
+    .samples-card,
+    .player-card,
+    .info-card {
+      .ant-card-body {
+        padding: 16px;
+      }
+    }
+
+    .sample-url {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+
+      .ant-typography {
+        max-width: 100%;
+        margin-right: 0;
+      }
+
+      .ant-btn-link {
+        align-self: flex-end;
+      }
+    }
+
+    .ant-space {
+      &.ant-space-horizontal {
+        .ant-space-item {
+          margin-bottom: 8px;
+        }
+      }
+    }
+
+    .ant-btn {
+      width: 100%;
+      margin-bottom: 8px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .info-card {
+      ul {
+        margin-left: 16px;
+        font-size: 14px;
+      }
+
+      .ant-typography-code {
+        font-size: 10px;
+        word-break: break-all;
+      }
+    }
+  }
+}
+
+// Animation for smooth transitions
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.video-test-page {
+  .input-card,
+  .samples-card,
+  .player-card,
+  .info-card {
+    animation: slideInUp 0.3s ease-out;
+  }
+
+  .player-card {
+    animation: slideInUp 0.5s ease-out;
+  }
+}
