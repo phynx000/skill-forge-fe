@@ -82,6 +82,7 @@ const RegisterPage: React.FC = () => {
 
             // Navigate to login page
             navigate('/login');
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             message.error('Đăng ký thất bại. Vui lòng thử lại!');
         } finally {

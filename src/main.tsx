@@ -15,7 +15,7 @@ import ProfileTypePage from "./clients/pages/Profile/ProfileTypePage.tsx";
 import CoursePlayerPage from "./clients/pages/Player/CoursePlayerPage.tsx";
 import CreateCoursePage from "./clients/pages/CrudCourse/CreateCoursePage.tsx";
 import EditCoursePage from "./clients/pages/CrudCourse/EditCoursePage.tsx";
-import VideoTestPage from "./clients/pages/VideoTestPage.tsx";
+
 
 const router = createBrowserRouter([
   {
@@ -49,10 +49,6 @@ const router = createBrowserRouter([
       {
         path: "/edit-course/:id",
         element: <EditCoursePage />
-      },
-      {
-        path: "/video-test",
-        element: <VideoTestPage />
       },
       {
         path: "/profile",

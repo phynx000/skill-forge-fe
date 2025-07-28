@@ -5,6 +5,7 @@ import CourseCard from './CourseCard';
 import CourseListItem from './CourseListItem';
 import type { CourseData } from './CourseCard';
 import './CourseCard.scss';
+import { useCourse } from '../../../hooks/useCourse';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -159,6 +160,10 @@ const CourseGridList: React.FC<CourseGridListProps> = ({
     const [pageSize, setPageSize] = useState(showControls ? 12 : 8);
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
     const [sortBy, setSortBy] = useState<SortOption>('relevance');
+
+    // ********
+    const { courses, loading, meta } = useCourse(currentPage, pageSize);
+
 
     const handlePageChange = (page: number, size?: number) => {
         setCurrentPage(page);
