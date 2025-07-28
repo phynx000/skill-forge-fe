@@ -10,138 +10,7 @@ import { useCourse } from '../../../hooks/useCourse';
 const { Text } = Typography;
 const { Option } = Select;
 
-// Mock data cho các khóa học
-const mockCourseData: CourseData[] = [
-    {
-        id: '1',
-        title: 'Complete React Developer Course 2024 - Redux, TypeScript, NextJS',
-        instructor: 'Nguyễn Văn A',
-        instructorAvatar: 'https://i.pravatar.cc/40?img=1',
-        price: 1299000,
-        originalPrice: 2599000,
-        rating: 4.7,
-        reviewCount: 15420,
-        studentCount: 89500,
-        thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop',
-        duration: '52 giờ',
-        level: 'Intermediate',
-        isBestseller: true,
-    },
-    {
-        id: '2',
-        title: 'The Complete JavaScript Course 2024: From Zero to Expert!',
-        instructor: 'Trần Thị B',
-        instructorAvatar: 'https://i.pravatar.cc/40?img=2',
-        price: 999000,
-        originalPrice: 1899000,
-        rating: 4.8,
-        reviewCount: 32100,
-        studentCount: 156000,
-        thumbnail: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=400&h=300&fit=crop',
-        duration: '69 giờ',
-        level: 'Beginner',
-        isBestseller: true,
-    },
-    {
-        id: '3',
-        title: 'Python for Data Science and Machine Learning Bootcamp',
-        instructor: 'Lê Văn C',
-        instructorAvatar: 'https://i.pravatar.cc/40?img=3',
-        price: 1599000,
-        rating: 4.6,
-        reviewCount: 8750,
-        studentCount: 42300,
-        thumbnail: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&h=300&fit=crop',
-        duration: '43 giờ',
-        level: 'Intermediate',
-        isNew: true,
-    },
-    {
-        id: '4',
-        title: 'Modern CSS Grid, Flexbox & Sass: Create Amazing Websites',
-        instructor: 'Phạm Thị D',
-        instructorAvatar: 'https://i.pravatar.cc/40?img=4',
-        price: 799000,
-        originalPrice: 1599000,
-        rating: 4.5,
-        reviewCount: 12400,
-        studentCount: 67800,
-        thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop',
-        duration: '28 giờ',
-        level: 'Beginner',
-    },
-    {
-        id: '5',
-        title: 'Node.js, Express, MongoDB & More: The Complete Bootcamp',
-        instructor: 'Hoàng Văn E',
-        instructorAvatar: 'https://i.pravatar.cc/40?img=5',
-        price: 1399000,
-        originalPrice: 2799000,
-        rating: 4.7,
-        reviewCount: 19200,
-        studentCount: 73500,
-        thumbnail: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop',
-        duration: '42 giờ',
-        level: 'Advanced',
-        isBestseller: true,
-    },
-    {
-        id: '6',
-        title: 'Complete Guide to Flutter Development with Dart',
-        instructor: 'Vũ Thị F',
-        instructorAvatar: 'https://i.pravatar.cc/40?img=6',
-        price: 1199000,
-        rating: 4.4,
-        reviewCount: 6800,
-        studentCount: 28900,
-        thumbnail: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop',
-        duration: '48 giờ',
-        level: 'Intermediate',
-        isNew: true,
-    },
-    {
-        id: '7',
-        title: 'AWS Certified Solutions Architect Professional 2024',
-        instructor: 'Đặng Văn G',
-        instructorAvatar: 'https://i.pravatar.cc/40?img=7',
-        price: 1899000,
-        originalPrice: 3599000,
-        rating: 4.8,
-        reviewCount: 11500,
-        studentCount: 34200,
-        thumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop',
-        duration: '65 giờ',
-        level: 'Advanced',
-    },
-    {
-        id: '8',
-        title: 'Digital Marketing Masterclass: Get Your First 1000 Customers',
-        instructor: 'Bùi Thị H',
-        instructorAvatar: 'https://i.pravatar.cc/40?img=8',
-        price: 899000,
-        originalPrice: 1799000,
-        rating: 4.6,
-        reviewCount: 9300,
-        studentCount: 51600,
-        thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop',
-        duration: '32 giờ',
-        level: 'Beginner',
-    },
-    {
-        id: '9',
-        title: 'Complete Photoshop CC Course: From Beginner to Advanced',
-        instructor: 'Ngô Văn I',
-        instructorAvatar: 'https://i.pravatar.cc/40?img=9',
-        price: 699000,
-        rating: 4.3,
-        reviewCount: 7200,
-        studentCount: 39800,
-        thumbnail: 'https://images.unsplash.com/photo-1609921212029-bb5a28e60960?w=400&h=300&fit=crop',
-        duration: '25 giờ',
-        level: 'Beginner',
-        isNew: true,
-    },
-];
+
 
 type ViewMode = 'grid' | 'list';
 type SortOption = 'relevance' | 'rating' | 'newest' | 'price-low' | 'price-high';
@@ -156,10 +25,7 @@ const CourseGridList: React.FC<CourseGridListProps> = ({
     filterType = 'all',
     showControls = true
 }) => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(showControls ? 12 : 8);
-    const [viewMode, setViewMode] = useState<ViewMode>('grid');
-    const [sortBy, setSortBy] = useState<SortOption>('relevance');
+
 
     // ********
     const { courses, loading, meta } = useCourse(currentPage, pageSize);
