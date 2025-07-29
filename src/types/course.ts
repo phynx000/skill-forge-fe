@@ -12,7 +12,7 @@ export interface Course {
 }
 
 export interface PaginationMeta {
-    page: number;
+    current: number;
     pageSize: number;
     pages: number;
     totalItems: number;

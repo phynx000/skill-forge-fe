@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { CourseApiResponse, PaginationMeta } from "../types/course";
 import { fetchCourses } from "../services/courseApi";
 
-export const useCourse = (page = 1, pageSize = 10) => {
+export const useCourse = (current = 1, pageSize = 10) => {
     const [courses, setCourses] = useState<CourseApiResponse | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [meta, setMeta] = useState<PaginationMeta | null>(null);
@@ -12,7 +12,7 @@ export const useCourse = (page = 1, pageSize = 10) => {
     const getCourses = async () => {
       try {
         setLoading(true);
-        const data = await fetchCourses(page, pageSize);
+        const data = await fetchCourses(current, pageSize);
         setCourses(data);
         setMeta(data.data.meta);
       } catch (err) {
@@ -23,7 +23,7 @@ export const useCourse = (page = 1, pageSize = 10) => {
     };
 
     getCourses();
-  }, [page, pageSize]);
+  }, [current, pageSize]);
 
     return {
         courses,

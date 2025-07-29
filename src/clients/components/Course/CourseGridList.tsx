@@ -1,15 +1,33 @@
 import React, { useState, useMemo } from 'react';
-import { Row, Col, Pagination, Select, Space, Typography, Button } from 'antd';
+import { Row, Col, Pagination, Select, Space, Typography, Button, Spin } from 'antd';
 import { AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
 import CourseCard from './CourseCard';
 import CourseListItem from './CourseListItem';
 import type { CourseData } from './CourseCard';
 import './CourseCard.scss';
+import type { Course } from '../../../types/course';
 import { useCourse } from '../../../hooks/useCourse';
 
 const { Text } = Typography;
 const { Option } = Select;
 
+// Hàm chuyển đổi dữ liệu từ API sang định dạng của CourseData
+const mapCourseApiToCourseData = (apiCourse: Course): CourseData => ({
+    id: apiCourse.id.toString(),
+    title: apiCourse.title,
+    instructor: apiCourse.instructorName,
+    instructorAvatar: 'https://i.pravatar.cc/40', // Placeholder
+    price: apiCourse.price * 1000, // Giả sử giá từ API là đơn vị nghìn đồng
+    // originalPrice: apiCourse.originalPrice, // Thêm nếu có trong API
+    rating: 4.5, // Placeholder
+    reviewCount: 100, // Placeholder
+    studentCount: 500, // Placeholder
+    thumbnail: apiCourse.thumbnailUrl || `https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&h=300&fit=crop`, // Placeholder
+    duration: `${apiCourse.numberOfLessons} bài học`,
+    level: 'Beginner', // Placeholder
+    // isBestseller: apiCourse.isBestseller, // Thêm nếu có
+    // isNew: apiCourse.isNew, // Thêm nếu có
+});
 
 
 type ViewMode = 'grid' | 'list';
@@ -25,14 +43,16 @@ const CourseGridList: React.FC<CourseGridListProps> = ({
     filterType = 'all',
     showControls = true
 }) => {
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(showControls ? 12 : 8);
+    const [viewMode, setViewMode] = useState<ViewMode>('grid');
+    const [sortBy, setSortBy] = useState<SortOption>('relevance');
 
     // ********
-    const { courses, loading, meta } = useCourse(currentPage, pageSize);
+    const { courses: apiResponse, loading, meta } = useCourse(currentPage, pageSize);
 
-
-    const handlePageChange = (page: number, size?: number) => {
-        setCurrentPage(page);
+    const handlePageChange = (current: number, size?: number) => {
+        setCurrentPage(current);
         if (size) setPageSize(size);
     };
 
@@ -41,49 +61,28 @@ const CourseGridList: React.FC<CourseGridListProps> = ({
         // Implement sorting logic here
     };
 
-    const filteredCourses = useMemo(() => {
-        const courses = [...mockCourseData];
-        switch (filterType) {
-            case 'popular':
-                // Popular: Bestsellers with high student count
-                return courses
-                    .filter(c => c.isBestseller)
-                    .sort((a, b) => b.studentCount - a.studentCount);
-            case 'featured':
-                // Featured: High rating and good review count
-                return courses
-                    .filter(c => c.rating >= 4.7)
-                    .sort((a, b) => b.reviewCount - a.reviewCount);
-            case 'new':
-                return courses.filter(c => c.isNew);
-            case 'all':
-            default:
-                return courses;
+    const processedCourses = useMemo(() => {
+        if (!apiResponse?.data?.results) {
+            return [];
         }
-    }, [filterType]);
+        // Chuyển đổi dữ liệu API
+        const mapped = apiResponse.data.results.map(mapCourseApiToCourseData);
 
-    const getSortedCourses = () => {
-        const sortedCourses = [...filteredCourses];
-
+        // Áp dụng sắp xếp (client-side)
+        const sorted = [...mapped];
         switch (sortBy) {
             case 'rating':
-                return sortedCourses.sort((a, b) => b.rating - a.rating);
+                return sorted.sort((a, b) => b.rating - a.rating);
             case 'price-low':
-                return sortedCourses.sort((a, b) => a.price - b.price);
+                return sorted.sort((a, b) => a.price - b.price);
             case 'price-high':
-                return sortedCourses.sort((a, b) => b.price - a.price);
+                return sorted.sort((a, b) => b.price - a.price);
             case 'newest':
-                // For demo purposes, prioritize "new" courses
-                return sortedCourses.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
-            default:
-                // Default relevance order (bestsellers first)
-                return sortedCourses.sort((a, b) => (b.isBestseller ? 1 : 0) - (a.isBestseller ? 1 : 0));
+                return sorted.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+            default: // relevance
+                return sorted.sort((a, b) => (b.isBestseller ? 1 : 0) - (a.isBestseller ? 1 : 0));
         }
-    };
-
-    const sortedCourses = getSortedCourses();
-    const startIndex = (currentPage - 1) * pageSize;
-    const paginatedCourses = sortedCourses.slice(startIndex, startIndex + pageSize);
+    }, [apiResponse, sortBy]);
 
     const getGridCols = () => {
         return {
@@ -96,6 +95,7 @@ const CourseGridList: React.FC<CourseGridListProps> = ({
         };
     };
 
+
     return (
         <div className="course-list-container">
             {/* Header with course count and controls */}
@@ -103,7 +103,7 @@ const CourseGridList: React.FC<CourseGridListProps> = ({
                 <div className="course-list-header">
                     <div>
                         <Text className="course-count">
-                            {sortedCourses.length.toLocaleString()} khóa học
+                            {meta ? `${meta.totalItems.toLocaleString()} khóa học` : 'Đang tải...'}
                         </Text>
                     </div>
 
@@ -140,9 +140,13 @@ const CourseGridList: React.FC<CourseGridListProps> = ({
             )}
 
             {/* Course Grid/List */}
-            {viewMode === 'grid' ? (
+            {loading ? (
+                <Row justify="start" align="middle" style={{ minHeight: '300px' }}>
+                    <Spin size="large" />
+                </Row>
+            ) : viewMode === 'grid' ? (
                 <Row gutter={[16, 24]} className="course-grid">
-                    {paginatedCourses.map((course) => (
+                    {processedCourses.map((course) => (
                         <Col key={course.id} {...getGridCols()}>
                             <CourseCard
                                 course={course}
@@ -152,7 +156,7 @@ const CourseGridList: React.FC<CourseGridListProps> = ({
                 </Row>
             ) : (
                 <div className="course-list">
-                    {paginatedCourses.map((course) => (
+                    {processedCourses.map((course) => (
                         <CourseListItem
                             key={course.id}
                             course={course}
@@ -162,11 +166,11 @@ const CourseGridList: React.FC<CourseGridListProps> = ({
             )}
 
             {/* Pagination */}
-            {showControls && (
+            {showControls && meta && meta.totalItems > 0 && (
                 <Row justify="center" style={{ marginTop: 32 }}>
                     <Pagination
                         current={currentPage}
-                        total={sortedCourses.length}
+                        total={meta.totalItems}
                         pageSize={pageSize}
                         showSizeChanger={showControls}
                         showQuickJumper={showControls}

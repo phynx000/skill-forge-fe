@@ -15,7 +15,7 @@ const ListCoursePage: React.FC = () => {
 
     return (
         <div className="list-course-page-container">
-            <Row>
+            <Row justify="start">
                 <Col span={24}>
                     <ListCourseHeader />
                 </Col>
