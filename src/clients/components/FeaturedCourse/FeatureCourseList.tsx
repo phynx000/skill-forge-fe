@@ -1,40 +1,32 @@
 import React from 'react';
-import { Card, List } from 'antd';
+import { Typography, Row, Col } from 'antd';
+import CourseGridList from '../Course/CourseGridList';
+import './FeatureCourseList.scss';
 
-
-const data = [
-    {
-        title: 'Title 1',
-    },
-    {
-        title: 'Title 2',
-    },
-    {
-        title: 'Title 3',
-    },
-    {
-        title: 'Title 4',
-    },
-];
-
-
-
+const { Title, Paragraph } = Typography;
 
 const FeaturedCourseList: React.FC = () => {
     return (
-        <div className="list-featured">
-            <List
-                grid={{ gutter: 16, column: 4 }}
-                dataSource={data}
-                renderItem={(item) => (
-                    <List.Item>
-                        <Card title={item.title}>Card content</Card>
-                    </List.Item>
-                )}
-            />
-        </div>
+        <div className="featured-courses-section">
+            <div className="container">
+                <Row justify="center">
+                    <Col span={24} style={{ textAlign: 'center', marginBottom: 48 }}>
+                        <Title level={2} className="section-title">
+                            Khóa học nổi bật
+                        </Title>
+                        <Paragraph className="section-description">
+                            Khám phá những khóa học được đánh giá cao nhất từ các chuyên gia hàng đầu
+                        </Paragraph>
+                    </Col>
+                </Row>
 
+                <CourseGridList
+                    filterType="featured"
+                    showControls={false}
+                />
+            </div>
+        </div>
     );
-}
+};
 
 export default FeaturedCourseList;

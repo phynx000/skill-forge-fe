@@ -1,10 +1,30 @@
 import { Drawer, Menu } from "antd";
 import { useState, forwardRef, useImperativeHandle } from "react";
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, MailOutlined, SettingOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
+import { Link } from "react-router-dom";
 
+type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
+    {
+        key: 'home',
+        icon: <HomeOutlined />,
+        label: (
+            <Link to="/">
+                Trang chủ
+            </Link>
+        )
+    },
+    {
+        key: 'profile',
+        icon: <UserOutlined />,
+        label: (
+            <Link to="/profile">
+                Profile
+            </Link>
+        )
+    },
     {
         key: '1',
         icon: <MailOutlined />,

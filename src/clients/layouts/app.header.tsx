@@ -5,6 +5,7 @@ import {
   SettingOutlined,
   SearchOutlined,
   ShoppingCartOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 
 import type { MenuProps } from "antd";
@@ -33,24 +34,69 @@ const items: MenuItem[] = [
     icon: <HomeOutlined />,
   },
   {
+    label: (
+      <Link to={"/profile"}>
+        <span>Profile</span>
+      </Link>
+    ),
+    key: "profile",
+    icon: <UserOutlined />,
+  },
+  {
     label: "Khám Phá",
     key: "SubMenu",
     icon: <SettingOutlined />,
     children: [
       {
         type: "group",
-        label: "Item 1",
+        label: "Khóa học",
         children: [
-          { label: "Option 1", key: "setting:1" },
-          { label: "Option 2", key: "setting:2" },
+          {
+            label: (
+              <Link to="/list-course">
+                <span>Tất cả khóa học</span>
+              </Link>
+            ),
+            key: "all-courses"
+          },
+          {
+            label: (
+              <Link to="/course/1/learn">
+                <span>Demo Course Player</span>
+              </Link>
+            ),
+            key: "demo-player"
+          },
+          {
+            label: (
+              <Link to="/create-course">
+                <span>Tạo khóa học</span>
+              </Link>
+            ),
+            key: "create-course"
+          },
         ],
       },
       {
         type: "group",
-        label: "Item 2",
+        label: "Profile",
         children: [
-          { label: "Option 3", key: "setting:3" },
-          { label: "Option 4", key: "setting:4" },
+          {
+            label: (
+              <Link to="/profile">
+                <span>Chọn Profile</span>
+              </Link>
+            ),
+            key: "profile-select"
+          },
+          {
+            label: (
+              <Link to="/profile/student/1">
+                <span>Student Profile</span>
+              </Link>
+            ),
+            key: "student-profile"
+          },
         ],
       },
     ],

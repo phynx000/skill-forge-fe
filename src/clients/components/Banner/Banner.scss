@@ -1,0 +1,197 @@
+.home-banner {
+  background: linear-gradient(135deg, #c800de 0%, #a000b8 100%);
+  min-height: 600px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="white" opacity="0.1"/><circle cx="80" cy="80" r="1" fill="white" opacity="0.1"/><circle cx="40" cy="60" r="1" fill="white" opacity="0.1"/></svg>');
+    background-size: 100px 100px;
+  }
+
+  .banner-content {
+    position: relative;
+    z-index: 1;
+    background: transparent !important;
+    padding: 0;
+  }
+
+  .banner-text {
+    color: white;
+
+    .banner-title {
+      color: white !important;
+      font-size: 3.5rem !important;
+      font-weight: 700 !important;
+      line-height: 1.2 !important;
+      margin-bottom: 24px !important;
+
+      .highlight {
+        background: linear-gradient(45deg, #ffd700, #ffed4e);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      @media (max-width: 768px) {
+        font-size: 2.5rem !important;
+      }
+    }
+
+    .banner-description {
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-size: 1.2rem !important;
+      line-height: 1.6 !important;
+      margin-bottom: 32px !important;
+    }
+
+    .banner-actions {
+      margin-bottom: 48px !important;
+
+      .cta-button {
+        background: linear-gradient(45deg, #c800de, #e040ff) !important;
+        border: none !important;
+        height: 48px !important;
+        padding: 0 32px !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        box-shadow: 0 4px 15px rgba(200, 0, 222, 0.4) !important;
+        transition: all 0.3s ease !important;
+
+        &:hover {
+          transform: translateY(-2px) !important;
+          box-shadow: 0 6px 20px rgba(200, 0, 222, 0.6) !important;
+        }
+      }
+
+      .demo-button {
+        background: transparent !important;
+        border: 2px solid rgba(255, 255, 255, 0.3) !important;
+        color: white !important;
+        height: 48px !important;
+        padding: 0 32px !important;
+        font-size: 16px !important;
+        backdrop-filter: blur(10px);
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1) !important;
+          border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+      }
+    }
+
+    .banner-stats {
+      .stat-item {
+        text-align: center;
+
+        .stat-number {
+          color: #ffd700 !important;
+          font-size: 2rem !important;
+          font-weight: 700 !important;
+          margin-bottom: 4px !important;
+        }
+
+        .stat-label {
+          color: rgba(255, 255, 255, 0.8) !important;
+          margin: 0 !important;
+          font-size: 14px !important;
+        }
+      }
+    }
+  }
+
+  .banner-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .hero-image {
+      position: relative;
+      max-width: 500px;
+      width: 100%;
+
+      .main-image {
+        width: 100%;
+        height: auto;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+      }
+
+      .floating-card {
+        position: absolute;
+        background: white;
+        padding: 12px 16px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        color: #333;
+        animation: float 3s ease-in-out infinite;
+
+        .anticon {
+          color: #c800de;
+        }
+
+        &.card-1 {
+          top: 20%;
+          left: -10%;
+          animation-delay: 0s;
+        }
+
+        &.card-2 {
+          bottom: 20%;
+          right: -10%;
+          animation-delay: 1.5s;
+        }
+      }
+    }
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@media (max-width: 992px) {
+  .home-banner {
+    .banner-visual {
+      margin-top: 32px;
+
+      .hero-image {
+        .floating-card {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .home-banner {
+    min-height: 500px;
+    
+    .banner-text {
+      text-align: center;
+
+      .banner-stats {
+        margin-top: 32px;
+      }
+    }
+  }
+}
