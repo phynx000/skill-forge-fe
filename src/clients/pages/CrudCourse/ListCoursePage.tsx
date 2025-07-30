@@ -5,9 +5,15 @@ import ListFilter from "../../components/Filter/ListFilter";
 import "./ListCoursePage.scss";
 import ListCourseHeader from "../../components/Course/ListCourseHeader";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
+import { useSearchParams } from "react-router-dom";
 
 const ListCoursePage: React.FC = () => {
     const [isFilterVisible, setIsFilterVisible] = useState(true);
+    const [searchParams] = useSearchParams(); // Lấy query parameters
+
+    // Parse categoryId từ URL parameter (có thể là 'category' hoặc 'categoryId')
+    const categoryParam = searchParams.get('category') || searchParams.get('categoryId');
+    const categoryId = categoryParam ? parseInt(categoryParam, 10) : undefined;
 
     const toggleFilter = () => {
         setIsFilterVisible(!isFilterVisible);
@@ -45,7 +51,7 @@ const ListCoursePage: React.FC = () => {
                     </Col>
                 )}
                 <Col span={isFilterVisible ? 18 : 24} className="course-column">
-                    <CourseGridList />
+                    <CourseGridList categoryId={categoryId} />
                 </Col>
             </Row>
         </div>

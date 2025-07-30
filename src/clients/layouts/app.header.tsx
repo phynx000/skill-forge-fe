@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   HomeOutlined,
   SettingOutlined,
@@ -9,13 +9,14 @@ import {
 } from "@ant-design/icons";
 
 import type { MenuProps } from "antd";
-import { Menu, Space, Button } from "antd";
+import { Menu, Space, Button, Row } from "antd";
 import SearchBar from "../components/Search/SearchInput";
 import Logo from "../components/Logo/Logo";
 import AuthButtons from "../../components/Button/AuthButton";
 import UserAvatar from "../components/User/User";
 import { useRef } from 'react';
 import MenuSideBar from "../components/Menu/MenuSideBar";
+import CategoryMenu from "../components/Menu/CategoryMenu";
 import type { MenuSideBarRef } from "../components/Menu/MenuSideBar";
 
 
@@ -113,11 +114,12 @@ const items: MenuItem[] = [
 
 export default function AppHeader() {
   const [current, setCurrent] = useState("home");
+  const navigate = useNavigate();
+
   const onClick: MenuProps["onClick"] = (e) => {
     console.log("click ", e);
     setCurrent(e.key);
   };
-
 
   const sidebarRef = useRef<MenuSideBarRef>(null);
 
@@ -125,37 +127,53 @@ export default function AppHeader() {
     sidebarRef.current?.showDrawer();
   };
 
+  // Xử lý khi click vào category
+  const handleCategoryClick = (categoryId: string, categoryName: string) => {
+    console.log('Navigate to category:', { categoryId, categoryName });
+    // Navigate to course list with category filter
+    navigate(`/list-course?category=${categoryId}`);
+  };
 
   return (
     <>
-      <div className="flex items-center place-content-between app-header">
-        <div className="lg:flex hidden items-center gap-4">
-          <Logo />
-          <Menu
-            onClick={onClick}
-            selectedKeys={[current]}
-            mode="horizontal"
-            items={items}
-          />
-          <SearchBar />
+      <div className="app-header-container">
+        {/* Main Header */}
+        <div className="flex items-center place-content-between app-header">
+          <div className="lg:flex hidden items-center gap-4">
+            <Logo />
+            <Menu
+              onClick={onClick}
+              selectedKeys={[current]}
+              mode="horizontal"
+              items={items}
+            />
+            <SearchBar />
+          </div>
+
+          <div className="lg:flex hidden items-center">
+            <AuthButtons />
+            <UserAvatar />
+          </div>
+
+          {/* mobile */}
+          <div className="lg:hidden flex items-center gap-4 place-content-between mobile-header-content">
+            <Button onClick={handleOpenSidebar} className="lg:hidden flex">☰</Button>
+            <Logo />
+            <Space>
+              <SearchOutlined />
+              <ShoppingCartOutlined />
+            </Space>
+            {/* Modal được gọi qua ref */}
+            {/* Sidebar ẩn, sẽ trượt ra khi gọi hàm */}
+            <MenuSideBar ref={sidebarRef} />
+          </div>
         </div>
 
-        <div className="lg:flex hidden items-center">
-          <AuthButtons />
-          <UserAvatar />
-        </div>
-
-        {/* mobile */}
-        <div className="lg:hidden flex items-center gap-4 place-content-between mobile-header-content">
-          <Button onClick={handleOpenSidebar} className="lg:hidden flex">☰</Button>
-          <Logo />
-          <Space>
-            <SearchOutlined />
-            <ShoppingCartOutlined />
-          </Space>
-          {/* Modal được gọi qua ref */}
-          {/* Sidebar ẩn, sẽ trượt ra khi gọi hàm */}
-          <MenuSideBar ref={sidebarRef} />
+        {/* Category Menu Bar - chỉ hiển thị trên desktop */}
+        <div className="lg:block hidden">
+          <Row justify="center" align="middle" style={{ minHeight: '50px' }}>
+            <CategoryMenu onCategoryClick={handleCategoryClick} />
+          </Row>
         </div>
       </div>
     </>

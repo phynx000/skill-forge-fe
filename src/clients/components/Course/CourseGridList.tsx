@@ -37,11 +37,13 @@ type FilterType = 'all' | 'popular' | 'featured' | 'new';
 interface CourseGridListProps {
     filterType?: FilterType;
     showControls?: boolean;
+    categoryId?: number;
 }
 
 const CourseGridList: React.FC<CourseGridListProps> = ({
     filterType = 'all',
-    showControls = true
+    showControls = true,
+    categoryId
 }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(showControls ? 12 : 8);
@@ -49,7 +51,7 @@ const CourseGridList: React.FC<CourseGridListProps> = ({
     const [sortBy, setSortBy] = useState<SortOption>('relevance');
 
     // ********
-    const { courses: apiResponse, loading, meta } = useCourse(currentPage, pageSize);
+    const { courses: apiResponse, loading, meta } = useCourse(currentPage, pageSize, categoryId);
 
     const handlePageChange = (current: number, size?: number) => {
         setCurrentPage(current);

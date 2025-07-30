@@ -12,7 +12,9 @@ import {
     List,
     Space,
     Tag,
-    Image
+    Image,
+    Spin,
+    Alert
 } from 'antd';
 import {
     CheckOutlined,
@@ -22,129 +24,27 @@ import {
     UserOutlined,
     BookOutlined,
     GlobalOutlined,
-    TrophyOutlined,
-    SafetyOutlined,
-    ApiOutlined,
     ShoppingCartOutlined,
     HeartOutlined
 } from '@ant-design/icons';
 import './CourseDetail.scss';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useDetailCourse } from '../../../hooks/useDetailCourse';
+import type { CourseDetail } from '../../../types/course';
+
 
 const { Title, Paragraph, Text } = Typography;
 const { Panel } = Collapse;
 
-// Mock data cho khóa học
-const courseData = {
-    id: 1,
-    title: "React Complete Course - Từ Cơ Bản Đến Nâng Cao 2024",
-    shortDescription: "Học React.js từ A-Z với TypeScript, Hooks, Context API, Redux Toolkit và các dự án thực tế",
-    instructor: {
-        name: "Nguyễn Văn An",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
-        title: "Senior Frontend Developer",
-        experience: "5+ năm kinh nghiệm"
-    },
-    rating: 4.8,
-    reviewCount: 1250,
-    studentCount: 8500,
-    lastUpdated: "Tháng 12, 2024",
-    price: 1299000,
-    originalPrice: 2499000,
-    thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=250&fit=crop",
-    duration: "35 giờ",
-    lessonCount: 180,
-    level: "Từ cơ bản đến nâng cao",
-    language: "Tiếng Việt",
-    features: [
-        "35 giờ video theo yêu cầu",
-        "180 bài học",
-        "Truy cập trên điện thoại và TV",
-        "Chứng nhận hoàn thành",
-        "Truy cập trọn đời",
-        "30 ngày hoàn tiền"
-    ],
-    whatYouLearn: [
-        "Xây dựng ứng dụng React từ đầu đến cuối",
-        "Hiểu sâu về React Hooks và Context API",
-        "Làm việc với TypeScript trong React",
-        "Quản lý state với Redux Toolkit",
-        "Responsive design với Ant Design",
-        "Deploy ứng dụng lên production",
-        "Best practices và design patterns",
-        "Testing với Jest và React Testing Library"
-    ],
-    curriculum: [
-        {
-            title: "Giới thiệu và Cài đặt",
-            lessons: [
-                { title: "Giới thiệu về React", duration: "15:30", isPreview: true },
-                { title: "Cài đặt môi trường", duration: "12:45", isPreview: false },
-                { title: "Tạo project đầu tiên", duration: "20:15", isPreview: false }
-            ]
-        },
-        {
-            title: "React Fundamentals",
-            lessons: [
-                { title: "Components và JSX", duration: "25:30", isPreview: true },
-                { title: "Props và State", duration: "30:45", isPreview: false },
-                { title: "Event Handling", duration: "18:20", isPreview: false },
-                { title: "Conditional Rendering", duration: "22:10", isPreview: false }
-            ]
-        },
-        {
-            title: "React Hooks",
-            lessons: [
-                { title: "useState Hook", duration: "28:15", isPreview: false },
-                { title: "useEffect Hook", duration: "35:40", isPreview: false },
-                { title: "useContext Hook", duration: "25:30", isPreview: false },
-                { title: "Custom Hooks", duration: "32:20", isPreview: false }
-            ]
-        },
-        {
-            title: "TypeScript với React",
-            lessons: [
-                { title: "TypeScript Basics", duration: "40:15", isPreview: false },
-                { title: "Typing Components", duration: "28:30", isPreview: false },
-                { title: "Props Types", duration: "22:45", isPreview: false }
-            ]
-        },
-        {
-            title: "State Management",
-            lessons: [
-                { title: "Context API Advanced", duration: "35:20", isPreview: false },
-                { title: "Redux Toolkit Setup", duration: "30:15", isPreview: false },
-                { title: "Creating Slices", duration: "25:40", isPreview: false },
-                { title: "Async Actions", duration: "32:30", isPreview: false }
-            ]
-        }
-    ],
-    description: `
-    <h3>Mô tả khóa học</h3>
-    <p>Khóa học React Complete này được thiết kế dành cho những ai muốn học React.js từ cơ bản đến nâng cao. 
-    Bạn sẽ học cách xây dựng các ứng dụng web hiện đại với React, TypeScript và các công cụ mới nhất.</p>
-    
-    <h4>Tại sao chọn khóa học này?</h4>
-    <ul>
-      <li>Nội dung được cập nhật liên tục theo xu hướng mới nhất</li>
-      <li>Dự án thực tế để áp dụng kiến thức</li>
-      <li>Hỗ trợ trực tiếp từ giảng viên</li>
-      <li>Cộng đồng học viên tích cực</li>
-    </ul>
-    
-    <h4>Sau khóa học bạn có thể:</h4>
-    <ul>
-      <li>Xây dựng ứng dụng React chuyên nghiệp</li>
-      <li>Làm việc với team development</li>
-      <li>Ứng tuyển vị trí Frontend Developer</li>
-      <li>Phát triển side projects cá nhân</li>
-    </ul>
-  `
-};
-
 const CourseDetail: React.FC = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+
+    // Fetch course data from API
+    const { courseDetail, loading, error } = useDetailCourse(Number(id));
+
+    // Extract course data
+    const course = courseDetail?.data;
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -154,42 +54,69 @@ const CourseDetail: React.FC = () => {
     };
 
     const calculateDiscount = () => {
-        return Math.round(((courseData.originalPrice - courseData.price) / courseData.originalPrice) * 100);
+        if (!course || course.originalPrice === 0) return 0;
+        return Math.round(((course.originalPrice - course.discountPrice) / course.originalPrice) * 100);
     };
 
     const handleStartLearning = () => {
         navigate(`/course/${id}/learn`);
     };
 
+    if (loading) {
+        return (
+            <div className="course-detail-page">
+                <div className="container" style={{ textAlign: 'center', padding: '100px 0' }}>
+                    <Spin size="large" />
+                    <div style={{ marginTop: 16 }}>Đang tải thông tin khóa học...</div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !course) {
+        return (
+            <div className="course-detail-page">
+                <div className="container" style={{ padding: '50px 0' }}>
+                    <Alert
+                        message="Lỗi"
+                        description={error || "Không thể tải thông tin khóa học"}
+                        type="error"
+                        showIcon
+                    />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="course-detail-page">
             <div className="container">
-                <Row gutter={[24, 24]}>
+                <Row gutter={[24, 24]} align="top">
                     {/* Phần bên trái - Nội dung chính */}
                     <Col xs={24} lg={16}>
                         <div className="course-content">
                             {/* Header */}
                             <div className="course-header">
                                 <Title level={1} className="course-title">
-                                    {courseData.title}
+                                    {course.title}
                                 </Title>
 
                                 <Paragraph className="course-description">
-                                    {courseData.shortDescription}
+                                    {course.shortDescription || course.description}
                                 </Paragraph>
 
                                 {/* Thông tin giảng viên */}
                                 <div className="instructor-info">
                                     <Space size="middle">
-                                        <Avatar size={48} src={courseData.instructor.avatar} />
+                                        <Avatar size={48} src={course.instructor.avatar} />
                                         <div>
-                                            <Text strong>{courseData.instructor.name}</Text>
+                                            <Text strong>{course.instructor.name}</Text>
                                             <br />
-                                            <Text type="secondary">{courseData.instructor.title}</Text>
+                                            <Text type="secondary">{course.instructor.title}</Text>
                                         </div>
                                     </Space>
                                     <Text type="secondary" className="last-updated">
-                                        Cập nhật: {courseData.lastUpdated}
+                                        Cập nhật: {course.lastUpdated || 'Tháng 12, 2024'}
                                     </Text>
                                 </div>
 
@@ -197,11 +124,11 @@ const CourseDetail: React.FC = () => {
                                 <div className="rating-info">
                                     <Space size="middle" wrap>
                                         <Space>
-                                            <Rate disabled defaultValue={courseData.rating} allowHalf />
-                                            <Text strong>{courseData.rating}</Text>
+                                            <Rate disabled defaultValue={course.rating} allowHalf />
+                                            <Text strong>{course.rating}</Text>
                                         </Space>
-                                        <Text>({courseData.reviewCount.toLocaleString()} đánh giá)</Text>
-                                        <Text>{courseData.studentCount.toLocaleString()} học viên</Text>
+                                        <Text>({course.reviewCount.toLocaleString()} đánh giá)</Text>
+                                        <Text>Cấp độ: {course.level}</Text>
                                     </Space>
                                 </div>
                             </div>
@@ -212,7 +139,7 @@ const CourseDetail: React.FC = () => {
                             <div className="what-you-learn">
                                 <Title level={3}>Bạn sẽ học được gì</Title>
                                 <Row gutter={[16, 8]}>
-                                    {courseData.whatYouLearn.map((item, index) => (
+                                    {course.whatYouLearn.map((item: string, index: number) => (
                                         <Col xs={24} md={12} key={index}>
                                             <Space align="start">
                                                 <CheckOutlined style={{ color: '#52c41a', marginTop: 4 }} />
@@ -229,36 +156,43 @@ const CourseDetail: React.FC = () => {
                             <div className="course-curriculum">
                                 <Title level={3}>Nội dung khóa học</Title>
                                 <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
-                                    {courseData.curriculum.length} chương • {courseData.lessonCount} bài học •
-                                    {courseData.duration} tổng thời lượng
+                                    {course.sections.length} chương • {course.lessonCount} bài học •
+                                    {course.duration} tổng thời lượng
                                 </Text>
 
                                 <Collapse>
-                                    {courseData.curriculum.map((chapter, index) => (
+                                    {course.sections.map((section) => (
                                         <Panel
                                             header={
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                    <Text strong>{chapter.title}</Text>
-                                                    <Text type="secondary">{chapter.lessons.length} bài học</Text>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                                                    <Text strong>{section.title}</Text>
+                                                    <Text type="secondary">
+                                                        {section.lessons.length} bài học
+                                                    </Text>
                                                 </div>
                                             }
-                                            key={index}
+                                            key={section.id}
                                         >
-                                            <List
-                                                dataSource={chapter.lessons}
-                                                renderItem={(lesson) => (
-                                                    <List.Item>
-                                                        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-                                                            <Space>
-                                                                <PlayCircleOutlined />
-                                                                <Text>{lesson.title}</Text>
-                                                                {lesson.isPreview && <Tag color="blue">Xem trước</Tag>}
+                                            {section.lessons.length > 0 ? (
+                                                <List
+                                                    dataSource={section.lessons}
+                                                    renderItem={(lesson) => (
+                                                        <List.Item style={{ padding: '8px 20px', border: 'none' }}>
+                                                            <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                                                                <Space>
+                                                                    {/* <PlayCircleOutlined /> */}
+                                                                    <Text>{lesson.title}</Text>
+                                                                </Space>
+                                                                {/* <Text type="secondary">#{lesson.id}</Text> */}
                                                             </Space>
-                                                            <Text type="secondary">{lesson.duration}</Text>
-                                                        </Space>
-                                                    </List.Item>
-                                                )}
-                                            />
+                                                        </List.Item>
+                                                    )}
+                                                />
+                                            ) : (
+                                                <Text type="secondary" style={{ fontStyle: 'italic' }}>
+                                                    Chưa có bài học nào trong chương này
+                                                </Text>
+                                            )}
                                         </Panel>
                                     ))}
                                 </Collapse>
@@ -269,23 +203,22 @@ const CourseDetail: React.FC = () => {
                             {/* Mô tả chi tiết */}
                             <div className="course-description-detail">
                                 <Title level={3}>Mô tả</Title>
-                                <div
-                                    className="description-content"
-                                    dangerouslySetInnerHTML={{ __html: courseData.description }}
-                                />
+                                <div className="description-content">
+                                    <p>{course.description}</p>
+                                </div>
                             </div>
                         </div>
                     </Col>
 
                     {/* Phần bên phải - Sidebar */}
                     <Col xs={24} lg={8}>
-                        <div className="course-sidebar">
+                        <div className="course-sidebar" style={{ position: 'sticky', top: '24px' }}>
                             <Card className="purchase-card">
                                 {/* Thumbnail */}
                                 <div className="course-thumbnail">
                                     <Image
-                                        src={courseData.thumbnail}
-                                        alt={courseData.title}
+                                        src={course.thumbnailUrl}
+                                        alt={course.title}
                                         preview={false}
                                         style={{ borderRadius: 8 }}
                                     />
@@ -297,13 +230,19 @@ const CourseDetail: React.FC = () => {
                                 {/* Giá */}
                                 <div className="price-section">
                                     <Space align="baseline">
-                                        <Text className="current-price">{formatPrice(courseData.price)}</Text>
-                                        <Text delete type="secondary" className="original-price">
-                                            {formatPrice(courseData.originalPrice)}
+                                        <Text className="current-price">
+                                            {course.discountPrice > 0 ? formatPrice(course.discountPrice) : 'Miễn phí'}
                                         </Text>
-                                        <Tag color="red" className="discount-tag">
-                                            -{calculateDiscount()}%
-                                        </Tag>
+                                        {course.originalPrice > 0 && course.originalPrice !== course.discountPrice && (
+                                            <>
+                                                <Text delete type="secondary" className="original-price">
+                                                    {formatPrice(course.originalPrice)}
+                                                </Text>
+                                                <Tag color="red" className="discount-tag">
+                                                    -{calculateDiscount()}%
+                                                </Tag>
+                                            </>
+                                        )}
                                     </Space>
                                 </div>
 
@@ -344,10 +283,10 @@ const CourseDetail: React.FC = () => {
                                     <Title level={5}>Khóa học bao gồm:</Title>
                                     <List
                                         dataSource={[
-                                            { icon: <ClockCircleOutlined />, text: courseData.duration },
-                                            { icon: <BookOutlined />, text: `${courseData.lessonCount} bài học` },
-                                            { icon: <UserOutlined />, text: courseData.level },
-                                            { icon: <GlobalOutlined />, text: courseData.language }
+                                            { icon: <ClockCircleOutlined />, text: course.duration },
+                                            { icon: <BookOutlined />, text: `${course.lessonCount} bài học` },
+                                            { icon: <UserOutlined />, text: course.level },
+                                            { icon: <GlobalOutlined />, text: course.language }
                                         ]}
                                         renderItem={(item) => (
                                             <List.Item style={{ padding: '8px 0', border: 'none' }}>
@@ -365,15 +304,13 @@ const CourseDetail: React.FC = () => {
                                 {/* Các tính năng */}
                                 <div className="course-features">
                                     <List
-                                        dataSource={[
-                                            { icon: <ApiOutlined />, text: "Truy cập trọn đời" },
-                                            { icon: <TrophyOutlined />, text: "Chứng nhận hoàn thành" },
-                                            { icon: <SafetyOutlined />, text: "30 ngày hoàn tiền" }
-                                        ]}
+                                        dataSource={course.features.map(feature => ({
+                                            icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />,
+                                            text: feature
+                                        }))}
                                         renderItem={(item) => (
                                             <List.Item style={{ padding: '8px 0', border: 'none' }}>
                                                 <Space>
-                                                    <CheckCircleOutlined style={{ color: '#52c41a' }} />
                                                     {item.icon}
                                                     <Text>{item.text}</Text>
                                                 </Space>
