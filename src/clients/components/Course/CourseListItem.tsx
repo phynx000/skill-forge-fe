@@ -63,7 +63,7 @@ const CourseListItem: React.FC<CourseListItemProps> = ({ course }) => {
                             src={thumbnail}
                             style={{
                                 width: '100%',
-                                height: '140px',
+                                // height: '50%',
                                 objectFit: 'cover',
                                 borderRadius: '6px'
                             }}

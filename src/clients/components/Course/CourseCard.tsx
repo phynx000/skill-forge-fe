@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Rate, Button, Typography, Space, Avatar, Tag } from 'antd';
 import { UserOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import './CourseCard.scss';
 
 const { Text, Title } = Typography;
 
@@ -28,6 +29,8 @@ interface CourseCardProps {
 
 const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
     const navigate = useNavigate();
+
+
 
     const {
         id,

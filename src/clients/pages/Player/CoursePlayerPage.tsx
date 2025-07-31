@@ -1,14 +1,17 @@
-import React, { useState, useCallback } from 'react';
-import { Row, Col, Breadcrumb, Button, Space, Dropdown, Typography } from 'antd';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { Row, Col, Breadcrumb, Button, Space, Dropdown, Typography, Spin, Alert } from 'antd';
 import { HomeOutlined, MoreOutlined, BookOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import VideoPlayer from '../../components/VideoPlayer/VideoPlayer';
 import LessonTabs from '../../components/LessonTabs/LessonTabs';
 import SectionSidebar from '../../components/SectionSidebar/SectionSidebar';
+import { usePlayCourse } from '../../../hooks/usePlayCourse';
+import type { PlaySection } from '../../../types/playCourse';
 import './CoursePlayerPage.scss';
 
 const { Title } = Typography;
 
+// Extend the existing Lesson interface to be compatible with PlayLesson
 interface Lesson {
     id: string;
     title: string;
@@ -20,6 +23,7 @@ interface Lesson {
     objectives: string[];
 }
 
+// Extend the existing Section interface to be compatible with PlaySection
 interface Section {
     id: string;
     title: string;
@@ -28,217 +32,143 @@ interface Section {
     lessons: Lesson[];
 }
 
-const CoursePlayerPage: React.FC = () => {
-    // Mock data with HLS video URLs
-    const mockSections: Section[] = [
-        {
-            id: '1',
-            title: 'Giới thiệu React TypeScript',
-            totalLessons: 4,
-            completedLessons: 2,
-            lessons: [
-                {
-                    id: '1-1',
-                    title: 'Tổng quan về React và TypeScript',
-                    type: 'video',
-                    duration: '15:30',
-                    completed: false,
-                    videoUrl: 'https://vz-11106c72-014.b-cdn.net/bcdn_token=7v5gKQgUlg9R0M4_IxX10iKkhyhWqF1rQdTu9dEXyBk&expires=1753757015&token_path=%2F7a34ccd6-6143-4bd0-a976-493dc83863ae%2F/7a34ccd6-6143-4bd0-a976-493dc83863ae/playlist.m3u8',
-                    description: 'Trong bài học này, chúng ta sẽ tìm hiểu tổng quan về React và TypeScript, cách chúng kết hợp với nhau để tạo ra những ứng dụng web mạnh mẽ.',
-                    objectives: [
-                        'Hiểu được React là gì và tại sao nên sử dụng',
-                        'Nắm được TypeScript và lợi ích của nó',
-                        'Biết cách kết hợp React với TypeScript',
-                        'Thiết lập môi trường phát triển cơ bản'
-                    ]
-                },
-                {
-                    id: '1-2',
-                    title: 'Cài đặt môi trường phát triển',
-                    type: 'video',
-                    duration: '12:45',
-                    completed: true,
-                    videoUrl: 'https://vz-11106c72-014.b-cdn.net/ab36f7af-95f6-463b-adcb-cf6882221e61/playlist.m3u8',
-                    description: 'Hướng dẫn chi tiết cách cài đặt và cấu hình môi trường phát triển React TypeScript.',
-                    objectives: [
-                        'Cài đặt Node.js và npm',
-                        'Tạo project React với TypeScript',
-                        'Cấu hình VS Code cho React TypeScript',
-                        'Cài đặt các extension hữu ích'
-                    ]
-                },
-                {
-                    id: '1-3',
-                    title: 'Bài tập: Tạo component đầu tiên',
-                    type: 'exercise',
-                    duration: '30:00',
-                    completed: false,
-                    description: 'Thực hành tạo component React TypeScript đầu tiên của bạn.',
-                    objectives: [
-                        'Tạo functional component với TypeScript',
-                        'Sử dụng Props với type safety',
-                        'Hiểu về JSX trong TypeScript',
-                        'Export và import components'
-                    ]
-                },
-                {
-                    id: '1-4',
-                    title: 'State và Props trong TypeScript',
-                    type: 'video',
-                    duration: '18:20',
-                    completed: false,
-                    videoUrl: 'https://vz-11106c72-014.b-cdn.net/b3f95de8-1234-5678-9abc-def012345678/playlist.m3u8',
-                    description: 'Tìm hiểu cách sử dụng State và Props với type safety trong React TypeScript.',
-                    objectives: [
-                        'Định nghĩa types cho Props',
-                        'Sử dụng useState với TypeScript',
-                        'Generic types trong React',
-                        'Best practices cho typing'
-                    ]
-                }
-            ]
-        },
-        {
-            id: '2',
-            title: 'Hooks và State Management',
-            totalLessons: 5,
-            completedLessons: 0,
-            lessons: [
-                {
-                    id: '2-1',
-                    title: 'useState và useEffect với TypeScript',
-                    type: 'video',
-                    duration: '20:15',
-                    completed: false,
-                    videoUrl: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-                    description: 'Học cách sử dụng useState và useEffect hooks với TypeScript.',
-                    objectives: [
-                        'Typing useState hooks',
-                        'useEffect dependencies typing',
-                        'Custom hooks với TypeScript',
-                        'Error handling trong hooks'
-                    ]
-                },
-                {
-                    id: '2-2',
-                    title: 'Custom Hooks nâng cao',
-                    type: 'video',
-                    duration: '25:30',
-                    completed: false,
-                    videoUrl: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-                    description: 'Tạo và sử dụng custom hooks phức tạp với TypeScript.',
-                    objectives: [
-                        'Tạo reusable custom hooks',
-                        'Generic trong custom hooks',
-                        'Performance optimization',
-                        'Testing custom hooks'
-                    ]
-                },
-                {
-                    id: '2-3',
-                    title: 'Context API với TypeScript',
-                    type: 'video',
-                    duration: '22:45',
-                    completed: false,
-                    videoUrl: 'https://vz-11106c72-014.b-cdn.net/ab36f7af-95f6-463b-adcb-cf6882221e61/playlist.m3u8',
-                    description: 'Quản lý state global với Context API và TypeScript.',
-                    objectives: [
-                        'Tạo typed Context',
-                        'Provider và Consumer patterns',
-                        'useContext với TypeScript',
-                        'Context performance optimization'
-                    ]
-                },
-                {
-                    id: '2-4',
-                    title: 'Bài tập: Todo App với Hooks',
-                    type: 'exercise',
-                    duration: '45:00',
-                    completed: false,
-                    description: 'Xây dựng ứng dụng Todo hoàn chỉnh sử dụng Hooks và TypeScript.',
-                    objectives: [
-                        'CRUD operations với hooks',
-                        'Local storage integration',
-                        'Form handling với TypeScript',
-                        'Component composition'
-                    ]
-                },
-                {
-                    id: '2-5',
-                    title: 'Redux Toolkit với TypeScript',
-                    type: 'video',
-                    duration: '28:10',
-                    completed: false,
-                    videoUrl: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-                    description: 'Tích hợp Redux Toolkit với React TypeScript cho state management phức tạp.',
-                    objectives: [
-                        'Setup Redux Toolkit với TypeScript',
-                        'Typed slices và actions',
-                        'useSelector và useDispatch typing',
-                        'Async thunks với TypeScript'
-                    ]
-                }
-            ]
-        },
-        {
-            id: '3',
-            title: 'Styling và UI Libraries',
-            totalLessons: 3,
-            completedLessons: 0,
-            lessons: [
-                {
-                    id: '3-1',
-                    title: 'CSS Modules và Styled Components',
-                    type: 'video',
-                    duration: '19:25',
-                    completed: false,
-                    videoUrl: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-                    description: 'Các phương pháp styling hiện đại trong React TypeScript.',
-                    objectives: [
-                        'CSS Modules setup',
-                        'Styled Components với TypeScript',
-                        'Theme typing',
-                        'Responsive design patterns'
-                    ]
-                },
-                {
-                    id: '3-2',
-                    title: 'Ant Design với TypeScript',
-                    type: 'video',
-                    duration: '24:40',
-                    completed: false,
-                    videoUrl: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-                    description: 'Sử dụng Ant Design components với type safety.',
-                    objectives: [
-                        'Ant Design TypeScript integration',
-                        'Custom theme configuration',
-                        'Form handling với Ant Design',
-                        'Table và Data Display components'
-                    ]
-                },
-                {
-                    id: '3-3',
-                    title: 'Bài tập: Dashboard Admin',
-                    type: 'exercise',
-                    duration: '60:00',
-                    completed: false,
-                    description: 'Xây dựng dashboard admin hoàn chỉnh với Ant Design và TypeScript.',
-                    objectives: [
-                        'Layout design patterns',
-                        'Data visualization',
-                        'Form validation',
-                        'Responsive admin interface'
-                    ]
-                }
-            ]
-        }
-    ];
+// Function to convert API data to component format
+const convertApiDataToComponentFormat = (apiSections: PlaySection[]): Section[] => {
+    return apiSections.map(section => ({
+        id: section.id.toString(),
+        title: section.title,
+        totalLessons: section.lessons.length,
+        completedLessons: section.lessons.filter(lesson => lesson.completed).length,
+        lessons: section.lessons.map(lesson => ({
+            id: lesson.id.toString(),
+            title: lesson.title,
+            type: 'video' as const,
+            duration: '00:00', // API doesn't provide duration, using default
+            completed: lesson.completed,
+            videoUrl: lesson.videoUrl,
+            description: `Bài học: ${lesson.title}`,
+            objectives: [`Hoàn thành bài học ${lesson.title}`]
+        }))
+    }));
+};
 
-    const [currentLesson, setCurrentLesson] = useState<Lesson>(mockSections[0].lessons[0]);
+const CoursePlayerPage: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
+    const courseId = id ? parseInt(id) : 102; // Default to 102 if no ID in URL
+
+    // Fetch course data from API
+    const { playCourseData, loading, error } = usePlayCourse(courseId);
+
+    // Convert API data to component format using useMemo
+    const sections = useMemo(() => {
+        return playCourseData?.data ? convertApiDataToComponentFormat(playCourseData.data) : [];
+    }, [playCourseData]);
+
+    // Set default lesson - first lesson of first section if available
+    const defaultLesson = useMemo(() => {
+        return sections.length > 0 && sections[0].lessons.length > 0 ? sections[0].lessons[0] : null;
+    }, [sections]);
+
+    const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
+    const [sectionsState, setSectionsState] = useState<Section[]>([]);
+
+    // Update sections state when API data loads
+    useEffect(() => {
+        if (sections.length > 0) {
+            setSectionsState(sections);
+        }
+    }, [sections]);
+
+    // Update current lesson when data loads
+    useEffect(() => {
+        if (defaultLesson && !currentLesson) {
+            setCurrentLesson(defaultLesson);
+        }
+    }, [defaultLesson, currentLesson]);
 
     const handleLessonSelect = useCallback((lesson: Lesson) => {
         setCurrentLesson(lesson);
     }, []);
+
+    // Handle toggle lesson completion
+    const handleLessonToggleComplete = useCallback((lessonId: string, completed: boolean) => {
+        setSectionsState(prevSections => {
+            return prevSections.map(section => {
+                const updatedLessons = section.lessons.map(lesson => {
+                    if (lesson.id === lessonId) {
+                        return { ...lesson, completed };
+                    }
+                    return lesson;
+                });
+
+                // Recalculate completed lessons count
+                const completedLessons = updatedLessons.filter(lesson => lesson.completed).length;
+
+                return {
+                    ...section,
+                    lessons: updatedLessons,
+                    completedLessons
+                };
+            });
+        });
+
+        // Update current lesson if it's the one being toggled
+        setCurrentLesson(prevLesson => {
+            if (prevLesson && prevLesson.id === lessonId) {
+                return { ...prevLesson, completed };
+            }
+            return prevLesson;
+        });
+
+        // Here you can add API call to persist the change
+        console.log(`Lesson ${lessonId} completion status changed to: ${completed}`);
+        // TODO: Call API to update lesson completion status
+        // updateLessonCompletion(lessonId, completed);
+    }, []);
+
+    // Handle loading state
+    if (loading) {
+        return (
+            <div className="course-player-page">
+                <div style={{ textAlign: 'center', padding: '100px 0' }}>
+                    <Spin size="large" />
+                    <div style={{ marginTop: 16 }}>Đang tải khóa học...</div>
+                </div>
+            </div>
+        );
+    }
+
+    // Handle error state
+    if (error) {
+        return (
+            <div className="course-player-page">
+                <div style={{ padding: '50px 0' }}>
+                    <Alert
+                        message="Lỗi"
+                        description={error}
+                        type="error"
+                        showIcon
+                    />
+                </div>
+            </div>
+        );
+    }
+
+    // Handle no lesson selected
+    if (!currentLesson) {
+        return (
+            <div className="course-player-page">
+                <div style={{ textAlign: 'center', padding: '100px 0' }}>
+                    <Alert
+                        message="Thông báo"
+                        description="Không có bài học nào để hiển thị"
+                        type="info"
+                        showIcon
+                    />
+                </div>
+            </div>
+        );
+    }
 
     const courseMenuItems = [
         {
@@ -299,9 +229,10 @@ const CoursePlayerPage: React.FC = () => {
                     <div className="video-section">
                         {currentLesson.type === 'video' && currentLesson.videoUrl ? (
                             <VideoPlayer
+                                key={currentLesson.id} // Force re-mount when lesson changes
                                 videoUrl={currentLesson.videoUrl}
-                                autoPlay={false} // Đặt là true nếu bạn muốn tự động phát
-                                poster="https://via.placeholder.com/800x450.png?text=Loading+Video..." // URL ảnh bìa
+                                autoPlay={false}
+                                poster="https://via.placeholder.com/800x450.png?text=Loading+Video..."
                                 onReady={() => console.log(`Bài học "${currentLesson.title}" đã sẵn sàng!`)}
                             />
                         ) : (
@@ -323,9 +254,10 @@ const CoursePlayerPage: React.FC = () => {
                 {/* Right Column - Course Sidebar */}
                 <Col xs={24} lg={8} className="sidebar-column">
                     <SectionSidebar
-                        sections={mockSections}
+                        sections={sectionsState.length > 0 ? sectionsState : sections}
                         onLessonSelect={handleLessonSelect}
-                        currentLessonId={currentLesson.id}
+                        onLessonToggleComplete={handleLessonToggleComplete}
+                        currentLessonId={currentLesson?.id}
                     />
                 </Col>
             </Row>

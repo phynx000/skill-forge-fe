@@ -17,7 +17,7 @@ const mapCourseApiToCourseData = (apiCourse: Course): CourseData => ({
     title: apiCourse.title,
     instructor: apiCourse.instructorName,
     instructorAvatar: 'https://i.pravatar.cc/40', // Placeholder
-    price: apiCourse.price * 1000, // Giả sử giá từ API là đơn vị nghìn đồng
+    price: apiCourse.price, // Giả sử giá từ API là đơn vị nghìn đồng
     // originalPrice: apiCourse.originalPrice, // Thêm nếu có trong API
     rating: 4.5, // Placeholder
     reviewCount: 100, // Placeholder
@@ -37,11 +37,13 @@ type FilterType = 'all' | 'popular' | 'featured' | 'new';
 interface CourseGridListProps {
     filterType?: FilterType;
     showControls?: boolean;
+    categoryId?: number;
 }
 
 const CourseGridList: React.FC<CourseGridListProps> = ({
     filterType = 'all',
-    showControls = true
+    showControls = true,
+    categoryId
 }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(showControls ? 12 : 8);
@@ -49,7 +51,7 @@ const CourseGridList: React.FC<CourseGridListProps> = ({
     const [sortBy, setSortBy] = useState<SortOption>('relevance');
 
     // ********
-    const { courses: apiResponse, loading, meta } = useCourse(currentPage, pageSize);
+    const { courses: apiResponse, loading, meta } = useCourse(currentPage, pageSize, categoryId);
 
     const handlePageChange = (current: number, size?: number) => {
         setCurrentPage(current);
