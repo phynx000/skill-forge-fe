@@ -1,53 +1,209 @@
-# React + TypeScript + Vite
+# SkillForge UI - Frontend Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> 🎓 Modern e-learning platform built with React + TypeScript + Vite
 
-Currently, two official plugins are available:
+## 🚀 **Quick Start**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### **Prerequisites**
+- Node.js 18+ 
+- npm or yarn
+- Git
 
-## Expanding the ESLint configuration
+### **Installation**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+1. **Clone the repository:**
+```bash
+git clone https://github.com/phynx000/skill-forge-fe.git
+cd skill-forge-fe/skillforge-ui
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. **Install dependencies:**
+```bash
+npm install
+# or
+yarn install
+```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+3. **Setup environment variables:**
+```bash
+cp .env.example .env
+```
+Edit `.env` file with your configuration:
+```env
+VITE_BASE_URL_SERVER=http://localhost:8080
+VITE_APP_NAME=SkillForge
+```
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
+4. **Start development server:**
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+5. **Open browser:**
+Navigate to `http://localhost:5173`
+
+## 📁 **Project Structure**
+
+```
+src/
+├── admin/              # Admin panel components
+├── clients/            # Client-facing components
+│   ├── components/     # Reusable UI components
+│   ├── layouts/        # Page layouts
+│   ├── pages/          # Page components
+│   └── routers/        # Route configurations
+├── components/         # Shared components
+├── config/             # App configurations
+├── hooks/              # Custom React hooks
+├── services/           # API services
+├── styles/             # Global styles
+├── types/              # TypeScript type definitions
+└── utils/              # Utility functions
+```
+
+## 🛠 **Tech Stack**
+
+- **Framework:** React 18 + TypeScript
+- **Build Tool:** Vite
+- **UI Library:** Ant Design
+- **Styling:** SCSS + CSS Modules
+- **HTTP Client:** Axios
+- **Routing:** React Router v6
+- **State Management:** React Hooks + Context
+- **Code Quality:** ESLint + Prettier
+
+## 📦 **Available Scripts**
+
+```bash
+# Development
+npm run dev          # Start dev server
+npm run build        # Build for production
+npm run preview      # Preview production build
+
+# Code Quality
+npm run lint         # Run ESLint
+npm run lint:fix     # Fix ESLint errors
+npm run type-check   # Run TypeScript check
+```
+
+## 🔧 **Environment Variables**
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_BASE_URL_SERVER` | Backend API URL | `http://localhost:8080` |
+| `VITE_APP_NAME` | Application name | `SkillForge` |
+| `VITE_DEV_MODE` | Development mode | `true` |
+
+## 🎨 **Features**
+
+### **Student Features:**
+- ✅ Course browsing and filtering
+- ✅ Course enrollment and payment
+- ✅ Video player with HLS support
+- ✅ Progress tracking
+- ✅ User profiles
+
+### **Instructor Features:**
+- ✅ Course creation and management
+- ✅ Content upload
+- ✅ Student analytics
+
+### **Admin Features:**
+- ✅ User management
+- ✅ Course approval
+- ✅ System analytics
+
+## 🌐 **API Integration**
+
+### **Base Configuration:**
+```typescript
+const BASE_URL = import.meta.env.VITE_BASE_URL_SERVER;
+```
+
+### **Key Endpoints:**
+- `GET /api/v1/courses` - Get courses
+- `POST /api/v1/enrollments` - Enroll in course
+- `GET /api/v1/play-course/:id` - Get course content
+
+## 🎯 **Development Guidelines**
+
+### **Component Structure:**
+```typescript
+// Component template
+interface ComponentProps {
+    // Define props
+}
+
+const Component: React.FC<ComponentProps> = ({ prop1, prop2 }) => {
+    // Hooks
+    // State
+    // Effects
+    // Handlers
+    
+    return (
+        <div className="component">
+            {/* JSX */}
+        </div>
+    );
+};
+
+export default Component;
+```
+
+### **Custom Hooks:**
+```typescript
+// Hook template
+const useCustomHook = () => {
+    const [state, setState] = useState();
+    
+    // Logic
+    
+    return { state, actions };
+};
+```
+
+## 🚀 **Deployment**
+
+### **Production Build:**
+```bash
+npm run build
+```
+
+### **Deploy to Vercel:**
+```bash
+npm install -g vercel
+vercel --prod
+```
+
+### **Deploy to Netlify:**
+```bash
+npm run build
+# Upload dist/ folder to Netlify
+```
+
+## 🤝 **Contributing**
+
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## 📄 **License**
+
+This project is licensed under the MIT License.
+
+## 🆘 **Support**
+
+- 📧 Email: support@skillforge.com
+- 💬 Discord: [SkillForge Community](https://discord.gg/skillforge)
+- 📚 Docs: [Documentation](https://docs.skillforge.com)
+
+---
+
+Made with ❤️ by the SkillForge Team
     ...reactDom.configs.recommended.rules,
   },
 })
