@@ -5,7 +5,6 @@ import AppLayout from "./App.tsx";
 import { RouterProvider, createBrowserRouter } from "react-router";
 import { HomePage } from "./clients/pages/home.page.tsx";
 import ListCourse from "./clients/pages/CrudCourse/ListCoursePage.tsx";
-import CourseDetail from "./clients/pages/CrudCourse/CourseDetail.tsx";
 import LoginPage from "./clients/pages/auth/LoginPage.tsx";
 import RegisterPage from "./clients/pages/auth/RegisterPage.tsx";
 import ForgotPasswordPage from "./clients/pages/auth/ForgotPasswordPage.tsx";
@@ -15,6 +14,8 @@ import ProfileTypePage from "./clients/pages/Profile/ProfileTypePage.tsx";
 import CoursePlayerPage from "./clients/pages/Player/CoursePlayerPage.tsx";
 import CreateCoursePage from "./clients/pages/CrudCourse/CreateCoursePage.tsx";
 import EditCoursePage from "./clients/pages/CrudCourse/EditCoursePage.tsx";
+import CourseDetailPage from "./clients/pages/CrudCourse/CourseDetail.tsx";
+import CheckoutPage from "./clients/pages/Checkout/CheckoutPage.tsx";
 
 
 const router = createBrowserRouter([
@@ -36,7 +37,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/course/:id",
-        element: <CourseDetail />
+        element: <CourseDetailPage />
       },
       {
         path: "/course/:id/learn",
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
       {
         path: "/profile/instructor/:id",
         element: <InstructorProfilePage />
+      },
+      {
+        path: "/checkout",
+        element: <CheckoutPage />
       }
     ],
   },

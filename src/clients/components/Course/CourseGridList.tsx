@@ -17,7 +17,7 @@ const mapCourseApiToCourseData = (apiCourse: Course): CourseData => ({
     title: apiCourse.title,
     instructor: apiCourse.instructorName,
     instructorAvatar: 'https://i.pravatar.cc/40', // Placeholder
-    price: apiCourse.price * 1000, // Giả sử giá từ API là đơn vị nghìn đồng
+    price: apiCourse.price, // Giả sử giá từ API là đơn vị nghìn đồng
     // originalPrice: apiCourse.originalPrice, // Thêm nếu có trong API
     rating: 4.5, // Placeholder
     reviewCount: 100, // Placeholder

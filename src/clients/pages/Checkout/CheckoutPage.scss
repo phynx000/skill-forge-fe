@@ -1,0 +1,315 @@
+.checkout-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+
+    .breadcrumb-container {
+        margin-bottom: 24px;
+        
+        .ant-breadcrumb {
+            font-size: 14px;
+            
+            a {
+                color: #c800de;
+                text-decoration: none;
+                
+                &:hover {
+                    color: #a600b8;
+                }
+            }
+        }
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 32px;
+        
+        .ant-typography h2 {
+            color: #c800de;
+            margin-bottom: 8px;
+        }
+    }
+
+    .checkout-content {
+        .form-section {
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            
+            .ant-card-head {
+                background: linear-gradient(135deg, #c800de, #d63ef0);
+                border-radius: 8px 8px 0 0;
+                
+                .ant-card-head-title {
+                    color: white;
+                    font-weight: 600;
+                }
+            }
+            
+            .ant-card-body {
+                padding: 24px;
+            }
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            
+            .ant-radio-button-wrapper {
+                height: auto;
+                border-radius: 8px;
+                border: 2px solid #e8e8e8;
+                padding: 16px;
+                background: #fafafa;
+                transition: all 0.3s ease;
+                text-align: left;
+                
+                &:hover {
+                    border-color: #c800de;
+                    background: #f9f0fb;
+                }
+                
+                &.ant-radio-button-wrapper-checked {
+                    border-color: #c800de;
+                    background: #f3e8f5;
+                    box-shadow: 0 0 0 2px rgba(200, 0, 222, 0.2);
+                }
+                
+                .payment-content {
+                    .payment-header {
+                        margin-bottom: 4px;
+                        
+                        .payment-label {
+                            font-weight: 600;
+                            font-size: 16px;
+                        }
+                        
+                        .anticon {
+                            font-size: 18px;
+                            color: #c800de;
+                        }
+                    }
+                    
+                    .payment-description {
+                        font-size: 14px;
+                    }
+                }
+            }
+        }
+
+        .payment-details {
+            margin-top: 16px;
+            background: #f9f9f9;
+            border: 1px solid #e8e8e8;
+            
+            .bank-info {
+                p {
+                    margin: 8px 0;
+                    font-size: 14px;
+                    
+                    strong {
+                        color: #c800de;
+                    }
+                }
+            }
+        }
+
+        .order-summary {
+            position: sticky;
+            top: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            
+            .ant-card-head {
+                background: linear-gradient(135deg, #52c41a, #73d13d);
+                border-radius: 8px 8px 0 0;
+                
+                .ant-card-head-title {
+                    color: white;
+                    font-weight: 600;
+                }
+            }
+            
+            .course-item {
+                display: flex;
+                gap: 16px;
+                margin-bottom: 16px;
+                
+                .course-image {
+                    flex-shrink: 0;
+                    
+                    .ant-image {
+                        border-radius: 6px;
+                        overflow: hidden;
+                    }
+                }
+                
+                .course-details {
+                    flex: 1;
+                    
+                    .course-title {
+                        margin-bottom: 8px;
+                        font-size: 16px;
+                        line-height: 1.4;
+                        color: #262626;
+                    }
+                    
+                    .course-meta {
+                        font-size: 13px;
+                        
+                        .ant-tag {
+                            margin: 2px 4px 2px 0;
+                            font-size: 12px;
+                        }
+                    }
+                }
+            }
+            
+            .price-breakdown {
+                .price-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 12px;
+                    
+                    &.total {
+                        margin-bottom: 0;
+                        padding-top: 8px;
+                        
+                        .ant-typography {
+                            margin: 0;
+                        }
+                    }
+                }
+            }
+            
+            .checkout-button {
+                margin-top: 16px;
+                height: 48px;
+                font-size: 16px;
+                font-weight: 600;
+                background: linear-gradient(135deg, #c800de, #d63ef0);
+                border: none;
+                border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(200, 0, 222, 0.3);
+                transition: all 0.3s ease;
+                
+                &:hover {
+                    background: linear-gradient(135deg, #d63ef0, #e066f4);
+                    box-shadow: 0 6px 16px rgba(200, 0, 222, 0.4);
+                    transform: translateY(-2px);
+                }
+                
+                &.ant-btn-loading {
+                    background: linear-gradient(135deg, #bfbfbf, #d9d9d9);
+                }
+            }
+            
+            .security-note {
+                text-align: center;
+                margin-top: 16px;
+                padding: 12px;
+                background: #f6ffed;
+                border: 1px solid #b7eb8f;
+                border-radius: 6px;
+                
+                .security-text {
+                    font-size: 13px;
+                    color: #52c41a;
+                }
+            }
+        }
+    }
+}
+
+// Responsive Design
+@media (max-width: 992px) {
+    .checkout-page {
+        padding: 16px;
+        
+        .checkout-content {
+            .order-summary {
+                position: static;
+                margin-top: 24px;
+            }
+        }
+        
+        .page-header {
+            margin-bottom: 24px;
+            
+            .ant-typography h2 {
+                font-size: 24px;
+            }
+        }
+    }
+}
+
+@media (max-width: 576px) {
+    .checkout-page {
+        padding: 12px;
+        
+        .form-section {
+            .ant-card-body {
+                padding: 16px !important;
+            }
+        }
+        
+        .payment-methods {
+            .ant-radio-button-wrapper {
+                padding: 12px;
+                
+                .payment-content {
+                    .payment-header {
+                        .payment-label {
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+        }
+        
+        .course-item {
+            flex-direction: column;
+            text-align: center;
+            
+            .course-image {
+                align-self: center;
+            }
+        }
+    }
+}
+
+// Animation for form validation
+.ant-form-item-has-error {
+    .ant-input,
+    .ant-input:focus,
+    .ant-input:hover {
+        border-color: #ff4d4f;
+        box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+    }
+}
+
+.ant-form-item-has-success {
+    .ant-input {
+        border-color: #c800de;
+    }
+}
+
+// Loading animation
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.ant-btn-loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}

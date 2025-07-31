@@ -30,6 +30,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const [qualityLevels, setQualityLevels] = useState<{ height: number; }[]>([]);
     const [currentQuality, setCurrentQuality] = useState(-1); // -1 for auto
 
+    // Cleanup on component unmount
+    useEffect(() => {
+        return () => {
+            if (hlsRef.current) {
+                hlsRef.current.destroy();
+                hlsRef.current = null;
+            }
+        };
+    }, []);
+
     // Format time for display
     const formatTime = (timeInSeconds: number) => {
         const minutes = Math.floor(timeInSeconds / 60);
@@ -65,9 +75,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         const video = videoRef.current;
         if (!video || !videoUrl) return;
 
+        // Reset video state when URL changes
+        setIsPlaying(false);
+        setProgress(0);
+        setDuration(0);
+
         if (poster) video.poster = poster;
 
         const setupHls = () => {
+            // Destroy existing HLS instance if any
+            if (hlsRef.current) {
+                hlsRef.current.destroy();
+                hlsRef.current = null;
+            }
+
             const hls = new Hls();
             hlsRef.current = hls;
             hls.loadSource(videoUrl);
@@ -89,6 +110,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         };
 
         const setupNative = () => {
+            // Clear existing source
+            video.src = '';
+            video.load();
+
             video.src = videoUrl;
             video.addEventListener('loadedmetadata', () => {
                 console.log('Native HLS ready to play');
@@ -104,7 +129,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         }
 
         return () => {
-            hlsRef.current?.destroy();
+            if (hlsRef.current) {
+                hlsRef.current.destroy();
+                hlsRef.current = null;
+            }
+            // Reset video source
+            if (video) {
+                video.src = '';
+                video.load();
+            }
         };
     }, [videoUrl, autoPlay, poster, onReady]);
 

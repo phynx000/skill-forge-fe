@@ -76,6 +76,14 @@ const items: MenuItem[] = [
             ),
             key: "create-course"
           },
+          {
+            label: (
+              <Link to="/checkout">
+                <span>🛒 Thanh toán</span>
+              </Link>
+            ),
+            key: "checkout"
+          },
         ],
       },
       {

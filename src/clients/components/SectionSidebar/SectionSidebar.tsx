@@ -6,8 +6,10 @@ import {
     Progress,
     Badge,
     Space,
-    Button
+    Button,
+    Checkbox
 } from 'antd';
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import {
     PlayCircleOutlined,
     FileTextOutlined,
@@ -42,12 +44,14 @@ interface Section {
 interface SectionSidebarProps {
     sections: Section[];
     onLessonSelect: (lesson: Lesson) => void;
+    onLessonToggleComplete?: (lessonId: string, completed: boolean) => void;
     currentLessonId?: string;
 }
 
 const SectionSidebar: React.FC<SectionSidebarProps> = ({
     sections,
     onLessonSelect,
+    onLessonToggleComplete,
     currentLessonId
 }) => {
     const [activeKeys, setActiveKeys] = useState<string[]>(['1']);
@@ -70,14 +74,30 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
     const renderLessonItem = (lesson: Lesson) => {
         const isCurrentLesson = lesson.id === currentLessonId;
 
+        const handleCheckboxChange = (e: CheckboxChangeEvent) => {
+            e.nativeEvent?.stopPropagation(); // Prevent triggering lesson selection
+            if (onLessonToggleComplete) {
+                onLessonToggleComplete(lesson.id, !lesson.completed);
+            }
+        };
+
+        const handleLessonClick = () => {
+            onLessonSelect(lesson);
+        };
+
         return (
             <List.Item
                 className={`lesson-item lesson-${getLessonStatus(lesson)}`}
-                onClick={() => onLessonSelect(lesson)}
+                onClick={handleLessonClick}
             >
                 <div className="lesson-content">
                     <div className="lesson-header">
                         <Space>
+                            <Checkbox
+                                checked={lesson.completed}
+                                onChange={handleCheckboxChange}
+                                onClick={(e) => e.stopPropagation()}
+                            />
                             {getLessonIcon(lesson)}
                             <Text
                                 strong={isCurrentLesson}

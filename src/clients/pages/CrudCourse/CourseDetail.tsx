@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     Typography,
     Button,
@@ -11,7 +11,6 @@ import {
     Divider,
     List,
     Space,
-    Tag,
     Image,
     Spin,
     Alert
@@ -30,21 +29,51 @@ import {
 import './CourseDetail.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDetailCourse } from '../../../hooks/useDetailCourse';
-import type { CourseDetail } from '../../../types/course';
-
+import useEnrollmentStatus from '../../../hooks/useEnrollmentStatus';
+import useEnrollment from '../../../hooks/useEnrollment';
 
 const { Title, Paragraph, Text } = Typography;
 const { Panel } = Collapse;
 
-const CourseDetail: React.FC = () => {
+const CourseDetailPage: React.FC = () => {
     const navigate = useNavigate();
     const { id } = useParams();
 
     // Fetch course data from API
     const { courseDetail, loading, error } = useDetailCourse(Number(id));
 
+    // Check enrollment status
+    const {
+        isEnrolled,
+        enrollmentLoading,
+        enrollmentError,
+        checkEnrollmentStatus
+    } = useEnrollmentStatus();
+
+
+    // Handle enrollment
+    const { enrolling, handleEnroll } = useEnrollment(
+        (enrollment) => {
+            console.log('✅ Enrolled successfully:', enrollment);
+            // Refresh enrollment status after successful enrollment
+            if (id) {
+                checkEnrollmentStatus(Number(id));
+            }
+        },
+        (error) => {
+            console.error('❌ Enrollment failed:', error);
+        }
+    );
+
     // Extract course data
     const course = courseDetail?.data;
+
+    // Check enrollment status when component mounts or courseId changes
+    useEffect(() => {
+        if (id) {
+            checkEnrollmentStatus(Number(id));
+        }
+    }, [id, checkEnrollmentStatus]);
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -53,14 +82,28 @@ const CourseDetail: React.FC = () => {
         }).format(price);
     };
 
-    const calculateDiscount = () => {
-        if (!course || course.originalPrice === 0) return 0;
-        return Math.round(((course.originalPrice - course.discountPrice) / course.originalPrice) * 100);
-    };
+    // Temporarily commented out discount calculation
+    // const calculateDiscount = () => {
+    //     if (!course || course.originalPrice === 0) return 0;
+    //     return Math.round(((course.originalPrice - course.discountPrice) / course.originalPrice) * 100);
+    // };
 
     const handleStartLearning = () => {
         navigate(`/course/${id}/learn`);
+    }
+
+    const handlePurchase = async () => {
+        if (!id) return;
+        // Check if course is free
+        if (course && course.originalPrice === 0) {
+            // Free course - enroll directly
+            await handleEnroll(Number(id));
+        } else {
+            // Paid course - redirect to checkout
+            navigate(`/checkout?courseId=${id}`);
+        }
     };
+
 
     if (loading) {
         return (
@@ -201,6 +244,7 @@ const CourseDetail: React.FC = () => {
                             <Divider />
 
                             {/* Mô tả chi tiết */}
+
                             <div className="course-description-detail">
                                 <Title level={3}>Mô tả</Title>
                                 <div className="description-content">
@@ -231,9 +275,10 @@ const CourseDetail: React.FC = () => {
                                 <div className="price-section">
                                     <Space align="baseline">
                                         <Text className="current-price">
-                                            {course.discountPrice > 0 ? formatPrice(course.discountPrice) : 'Miễn phí'}
+                                            {course.originalPrice > 0 ? formatPrice(course.originalPrice) : 'Miễn phí'}
                                         </Text>
-                                        {course.originalPrice > 0 && course.originalPrice !== course.discountPrice && (
+                                        {/* Temporarily hide discount price and discount tag */}
+                                        {/* {course.originalPrice > 0 && course.originalPrice !== course.discountPrice && (
                                             <>
                                                 <Text delete type="secondary" className="original-price">
                                                     {formatPrice(course.originalPrice)}
@@ -242,38 +287,57 @@ const CourseDetail: React.FC = () => {
                                                     -{calculateDiscount()}%
                                                 </Tag>
                                             </>
-                                        )}
+                                        )} */}
                                     </Space>
                                 </div>
 
                                 {/* Buttons */}
                                 <div className="action-buttons">
-                                    <Button
-                                        type="primary"
-                                        size="large"
-                                        block
-                                        className="buy-button"
-                                        icon={<PlayCircleOutlined />}
-                                        onClick={handleStartLearning}
-                                    >
-                                        Bắt đầu học
-                                    </Button>
-                                    <Button
-                                        size="large"
-                                        block
-                                        className="cart-button"
-                                        icon={<ShoppingCartOutlined />}
-                                    >
-                                        Mua ngay
-                                    </Button>
-                                    <Button
-                                        size="large"
-                                        block
-                                        className="cart-button"
-                                        icon={<HeartOutlined />}
-                                    >
-                                        Thêm vào yêu thích
-                                    </Button>
+                                    {enrollmentLoading ? (
+                                        <Button
+                                            size="large"
+                                            block
+                                            loading
+                                            className="buy-button"
+                                        >
+                                            Đang kiểm tra...
+                                        </Button>
+                                    ) : isEnrolled ? (
+                                        <Button
+                                            type="primary"
+                                            size="large"
+                                            block
+                                            className="buy-button"
+                                            icon={<PlayCircleOutlined />}
+                                            onClick={handleStartLearning}
+                                        >
+                                            Bắt đầu học
+                                        </Button>
+                                    ) : (
+                                        /* User is not enrolled - Show purchase buttons */
+                                        <>
+                                            <Button
+                                                type="primary"
+                                                size="large"
+                                                block
+                                                className="buy-button"
+                                                icon={<ShoppingCartOutlined />}
+                                                loading={enrolling}
+                                                onClick={handlePurchase}
+                                            >
+                                                {enrolling ? 'Đang xử lý...' :
+                                                    (course.originalPrice === 0) ? 'Đăng ký miễn phí' : 'Mua ngay'}
+                                            </Button>
+                                            <Button
+                                                size="large"
+                                                block
+                                                className="cart-button"
+                                                icon={<HeartOutlined />}
+                                            >
+                                                Thêm vào yêu thích
+                                            </Button>
+                                        </>
+                                    )}
                                 </div>
 
                                 <Divider />
@@ -298,8 +362,29 @@ const CourseDetail: React.FC = () => {
                                         )}
                                     />
                                 </div>
+                                {/* Show enrollment status */}
+                                {isEnrolled && (
+                                    <div style={{ marginTop: 16, padding: 12, backgroundColor: '#f6ffed', borderRadius: 6, border: '1px solid #b7eb8f' }}>
+                                        <Space>
+                                            <CheckCircleOutlined style={{ color: '#52c41a' }} />
+                                            <Text type="success">Bạn đã đăng ký khóa học này</Text>
+                                        </Space>
+                                    </div>
+                                )}
+
+                                {enrollmentError && (
+                                    <Alert
+                                        message="Lỗi kiểm tra đăng ký"
+                                        description={enrollmentError}
+                                        type="warning"
+                                        showIcon
+                                        style={{ marginTop: 16 }}
+                                    />
+                                )}
+
 
                                 <Divider />
+
 
                                 {/* Các tính năng */}
                                 <div className="course-features">
@@ -327,4 +412,4 @@ const CourseDetail: React.FC = () => {
     );
 };
 
-export default CourseDetail;
+export default CourseDetailPage;

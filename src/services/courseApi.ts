@@ -18,12 +18,10 @@ export const fetchCourses = async (
 
 export const fetchCourseById = async (courseId: number): Promise<ApiResponse<CourseDetail>> => {
     try {
-        console.log('🔥 Fetching course with ID:', courseId);
         const response = await axios.get<ApiResponse<CourseDetail>>(
             `${BASE_URL_SERVER}/api/v1/courses/${courseId}`,
             
         );
-        console.log('✅ Response from API:', response.data);
         return response.data;
     } catch (error) {
         console.error('❌ Error fetching course:', error);
