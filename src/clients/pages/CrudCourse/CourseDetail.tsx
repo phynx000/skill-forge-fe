@@ -50,7 +50,6 @@ const CourseDetailPage: React.FC = () => {
         checkEnrollmentStatus
     } = useEnrollmentStatus();
 
-
     // Handle enrollment
     const { enrolling, handleEnroll } = useEnrollment(
         (enrollment) => {
@@ -62,6 +61,7 @@ const CourseDetailPage: React.FC = () => {
         },
         (error) => {
             console.error('❌ Enrollment failed:', error);
+            // Don't redirect on enrollment error - let user try again
         }
     );
 
@@ -314,7 +314,7 @@ const CourseDetailPage: React.FC = () => {
                                             Bắt đầu học
                                         </Button>
                                     ) : (
-                                        /* User is not enrolled - Show purchase buttons */
+                                        /* User is not enrolled OR enrollment check failed - Show purchase buttons */
                                         <>
                                             <Button
                                                 type="primary"
@@ -362,25 +362,27 @@ const CourseDetailPage: React.FC = () => {
                                         )}
                                     />
                                 </div>
-                                {/* Show enrollment status */}
+                                {/* Show enrollment status only when enrolled */}
                                 {isEnrolled && (
-                                    <div style={{ marginTop: 16, padding: 12, backgroundColor: '#f6ffed', borderRadius: 6, border: '1px solid #b7eb8f' }}>
+                                    <div style={{ marginTop: 16, padding: 12, backgroundColor: '#f6ffed', borderRadius: 6, border: '1px solid #4e7e29' }}>
                                         <Space>
-                                            <CheckCircleOutlined style={{ color: '#52c41a' }} />
+                                            <CheckCircleOutlined style={{ color: '#5d9b3d' }} />
                                             <Text type="success">Bạn đã đăng ký khóa học này</Text>
                                         </Space>
                                     </div>
                                 )}
 
-                                {enrollmentError && (
+                                {/* Show enrollment check error only if it's a real error (not 404)
+                                {enrollmentError && enrollmentError !== 'User is not enrolled' && (
                                     <Alert
-                                        message="Lỗi kiểm tra đăng ký"
-                                        description={enrollmentError}
+                                        message="Không thể kiểm tra trạng thái đăng ký"
+                                        description={`${enrollmentError}. Bạn vẫn có thể thử đăng ký khóa học.`}
                                         type="warning"
                                         showIcon
+                                        closable
                                         style={{ marginTop: 16 }}
                                     />
-                                )}
+                                )} */}
 
 
                                 <Divider />

@@ -1,7 +1,22 @@
 import { Link } from "react-router-dom";
+import { UserOutlined } from "@ant-design/icons";
+import { useAuth } from "../../contexts/authcontext";
 import "./AuthButton.scss"
 
 const AuthButtons = () => {
+    const { isAuthenticated, user } = useAuth();
+
+    if (isAuthenticated && user) {
+        return (
+            <div className="flex items-center gap-4 auth-buttons">
+                <span className="user-greeting">
+                    <UserOutlined />
+                    Xin chào, {user.fullName}
+                </span>
+            </div>
+        );
+    }
+
     return (
         <div className="flex items-center gap-4 auth-buttons">
             <Link

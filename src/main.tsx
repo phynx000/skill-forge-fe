@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles/global.css";
 import AppLayout from "./App.tsx";
+import { AuthProvider } from './contexts/authcontext';
 import { RouterProvider, createBrowserRouter } from "react-router";
 import { HomePage } from "./clients/pages/home.page.tsx";
 import ListCourse from "./clients/pages/CrudCourse/ListCoursePage.tsx";
@@ -86,7 +87,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
-
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>
 );
