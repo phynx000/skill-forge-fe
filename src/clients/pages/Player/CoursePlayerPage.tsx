@@ -6,6 +6,7 @@ import VideoPlayer from '../../components/VideoPlayer/VideoPlayer';
 import LessonTabs from '../../components/LessonTabs/LessonTabs';
 import SectionSidebar from '../../components/SectionSidebar/SectionSidebar';
 import { usePlayCourse } from '../../../hooks/usePlayCourse';
+import { useLessonDetail } from '../../../hooks/useLessonDetail';
 import type { PlaySection } from '../../../types/playCourse';
 import './CoursePlayerPage.scss';
 
@@ -59,6 +60,12 @@ const CoursePlayerPage: React.FC = () => {
     // Fetch course data from API
     const { playCourseData, loading, error } = usePlayCourse(courseId);
 
+    // State cho lesson hiện tại được chọn
+    const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
+
+    // Fetch lesson detail khi có lesson được chọn
+    const { lessonDetail, loading: lessonLoading, error: lessonError } = useLessonDetail(selectedLessonId);
+
     // Convert API data to component format using useMemo
     const sections = useMemo(() => {
         return playCourseData?.data ? convertApiDataToComponentFormat(playCourseData.data) : [];
@@ -81,13 +88,33 @@ const CoursePlayerPage: React.FC = () => {
 
     // Update current lesson when data loads
     useEffect(() => {
-        if (defaultLesson && !currentLesson) {
+        if (defaultLesson && !currentLesson && !selectedLessonId) {
             setCurrentLesson(defaultLesson);
+            setSelectedLessonId(parseInt(defaultLesson.id));
         }
-    }, [defaultLesson, currentLesson]);
+    }, [defaultLesson, currentLesson, selectedLessonId]);
+
+    // Update current lesson when lesson detail loads
+    useEffect(() => {
+        if (lessonDetail?.data) {
+            const updatedLesson: Lesson = {
+                id: lessonDetail.data.id.toString(),
+                title: lessonDetail.data.title,
+                type: 'video',
+                duration: '00:00',
+                completed: lessonDetail.data.completed,
+                videoUrl: lessonDetail.data.videoUrl,
+                description: `Bài học: ${lessonDetail.data.title}`,
+                objectives: [`Hoàn thành bài học ${lessonDetail.data.title}`]
+            };
+            setCurrentLesson(updatedLesson);
+        }
+    }, [lessonDetail]);
 
     const handleLessonSelect = useCallback((lesson: Lesson) => {
-        setCurrentLesson(lesson);
+        const lessonId = parseInt(lesson.id);
+        setSelectedLessonId(lessonId);
+        // setCurrentLesson sẽ được cập nhật thông qua useEffect khi lessonDetail load xong
     }, []);
 
     // Handle toggle lesson completion
@@ -127,25 +154,27 @@ const CoursePlayerPage: React.FC = () => {
     }, []);
 
     // Handle loading state
-    if (loading) {
+    if (loading || lessonLoading) {
         return (
             <div className="course-player-page">
                 <div style={{ textAlign: 'center', padding: '100px 0' }}>
                     <Spin size="large" />
-                    <div style={{ marginTop: 16 }}>Đang tải khóa học...</div>
+                    <div style={{ marginTop: 16 }}>
+                        {loading ? 'Đang tải khóa học...' : 'Đang tải bài học...'}
+                    </div>
                 </div>
             </div>
         );
     }
 
     // Handle error state
-    if (error) {
+    if (error || lessonError) {
         return (
             <div className="course-player-page">
                 <div style={{ padding: '50px 0' }}>
                     <Alert
                         message="Lỗi"
-                        description={error}
+                        description={error || lessonError}
                         type="error"
                         showIcon
                     />
@@ -229,11 +258,11 @@ const CoursePlayerPage: React.FC = () => {
                     <div className="video-section">
                         {currentLesson.type === 'video' && currentLesson.videoUrl ? (
                             <VideoPlayer
-                                key={currentLesson.id} // Force re-mount when lesson changes
+                                key={`${currentLesson.id}-${selectedLessonId}`} // Force re-mount when lesson changes
                                 videoUrl={currentLesson.videoUrl}
-                                autoPlay={false}
+                                autoPlay={true} // Tự động phát khi click vào lesson
                                 poster="https://via.placeholder.com/800x450.png?text=Loading+Video..."
-                                onReady={() => console.log(`Bài học "${currentLesson.title}" đã sẵn sàng!`)}
+                                onReady={() => console.log(`Bài học "${currentLesson.title}" đã sẵn sàng phát!`)}
                             />
                         ) : (
                             <div className="exercise-placeholder">
