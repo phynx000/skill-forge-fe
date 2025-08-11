@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Typography,
     Button,
@@ -13,7 +13,8 @@ import {
     Space,
     Image,
     Spin,
-    Alert
+    Alert,
+    Modal
 } from 'antd';
 import {
     CheckOutlined,
@@ -29,8 +30,10 @@ import {
 import './CourseDetail.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDetailCourse } from '../../../hooks/useDetailCourse';
+import { useLessonDetail } from '../../../hooks/useLessonDetail';
 import useEnrollmentStatus from '../../../hooks/useEnrollmentStatus';
 import useEnrollment from '../../../hooks/useEnrollment';
+import VideoPlayer from '../../components/VideoPlayer/VideoPlayer';
 
 const { Title, Paragraph, Text } = Typography;
 const { Panel } = Collapse;
@@ -42,14 +45,19 @@ const CourseDetailPage: React.FC = () => {
     // Fetch course data from API
     const { courseDetail, loading, error } = useDetailCourse(Number(id));
 
+    // State cho lesson modal
+    const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
+    const [isVideoModalVisible, setIsVideoModalVisible] = useState(false);
+
+    // Fetch lesson detail khi có lesson được chọn
+    const { lessonDetail, loading: lessonLoading } = useLessonDetail(selectedLessonId);
+
     // Check enrollment status
     const {
         isEnrolled,
         enrollmentLoading,
-        enrollmentError,
         checkEnrollmentStatus
     } = useEnrollmentStatus();
-
 
     // Handle enrollment
     const { enrolling, handleEnroll } = useEnrollment(
@@ -62,6 +70,7 @@ const CourseDetailPage: React.FC = () => {
         },
         (error) => {
             console.error('❌ Enrollment failed:', error);
+            // Don't redirect on enrollment error - let user try again
         }
     );
 
@@ -91,6 +100,16 @@ const CourseDetailPage: React.FC = () => {
     const handleStartLearning = () => {
         navigate(`/course/${id}/learn`);
     }
+
+    const handleLessonClick = (lessonId: number) => {
+        setSelectedLessonId(lessonId);
+        setIsVideoModalVisible(true);
+    };
+
+    const handleCloseVideoModal = () => {
+        setIsVideoModalVisible(false);
+        setSelectedLessonId(null);
+    };
 
     const handlePurchase = async () => {
         if (!id) return;
@@ -220,13 +239,22 @@ const CourseDetailPage: React.FC = () => {
                                                 <List
                                                     dataSource={section.lessons}
                                                     renderItem={(lesson) => (
-                                                        <List.Item style={{ padding: '8px 20px', border: 'none' }}>
+                                                        <List.Item
+                                                            style={{
+                                                                padding: '8px 20px',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                transition: 'background-color 0.2s'
+                                                            }}
+                                                            className="lesson-item"
+                                                            onClick={() => handleLessonClick(lesson.id)}
+                                                        >
                                                             <Space style={{ width: '100%', justifyContent: 'space-between' }}>
                                                                 <Space>
-                                                                    {/* <PlayCircleOutlined /> */}
+                                                                    <PlayCircleOutlined style={{ color: '#1890ff' }} />
                                                                     <Text>{lesson.title}</Text>
                                                                 </Space>
-                                                                {/* <Text type="secondary">#{lesson.id}</Text> */}
+                                                                <Text type="secondary">Xem trước</Text>
                                                             </Space>
                                                         </List.Item>
                                                     )}
@@ -314,7 +342,7 @@ const CourseDetailPage: React.FC = () => {
                                             Bắt đầu học
                                         </Button>
                                     ) : (
-                                        /* User is not enrolled - Show purchase buttons */
+                                        /* User is not enrolled OR enrollment check failed - Show purchase buttons */
                                         <>
                                             <Button
                                                 type="primary"
@@ -362,25 +390,27 @@ const CourseDetailPage: React.FC = () => {
                                         )}
                                     />
                                 </div>
-                                {/* Show enrollment status */}
+                                {/* Show enrollment status only when enrolled */}
                                 {isEnrolled && (
-                                    <div style={{ marginTop: 16, padding: 12, backgroundColor: '#f6ffed', borderRadius: 6, border: '1px solid #b7eb8f' }}>
+                                    <div style={{ marginTop: 16, padding: 12, backgroundColor: '#f6ffed', borderRadius: 6, border: '1px solid #4e7e29' }}>
                                         <Space>
-                                            <CheckCircleOutlined style={{ color: '#52c41a' }} />
+                                            <CheckCircleOutlined style={{ color: '#5d9b3d' }} />
                                             <Text type="success">Bạn đã đăng ký khóa học này</Text>
                                         </Space>
                                     </div>
                                 )}
 
-                                {enrollmentError && (
+                                {/* Show enrollment check error only if it's a real error (not 404)
+                                {enrollmentError && enrollmentError !== 'User is not enrolled' && (
                                     <Alert
-                                        message="Lỗi kiểm tra đăng ký"
-                                        description={enrollmentError}
+                                        message="Không thể kiểm tra trạng thái đăng ký"
+                                        description={`${enrollmentError}. Bạn vẫn có thể thử đăng ký khóa học.`}
                                         type="warning"
                                         showIcon
+                                        closable
                                         style={{ marginTop: 16 }}
                                     />
-                                )}
+                                )} */}
 
 
                                 <Divider />
@@ -408,6 +438,38 @@ const CourseDetailPage: React.FC = () => {
                     </Col>
                 </Row>
             </div>
+
+            {/* Modal để hiển thị video preview */}
+            <Modal
+                title={lessonDetail?.data?.title || "Preview Bài học"}
+                open={isVideoModalVisible}
+                onCancel={handleCloseVideoModal}
+                footer={null}
+                width="80%"
+                style={{ top: 20 }}
+                destroyOnClose={true}
+            >
+                {lessonLoading ? (
+                    <div style={{ textAlign: 'center', padding: '50px 0' }}>
+                        <Spin size="large" />
+                        <div style={{ marginTop: 16 }}>Đang tải video...</div>
+                    </div>
+                ) : lessonDetail?.data?.videoUrl ? (
+                    <VideoPlayer
+                        key={selectedLessonId}
+                        videoUrl={lessonDetail.data.videoUrl}
+                        autoPlay={true}
+                        onReady={() => console.log(`Preview bài học "${lessonDetail.data.title}" đã sẵn sàng!`)}
+                    />
+                ) : (
+                    <Alert
+                        message="Không thể tải video"
+                        description="Video preview không khả dụng cho bài học này."
+                        type="warning"
+                        showIcon
+                    />
+                )}
+            </Modal>
         </div>
     );
 };

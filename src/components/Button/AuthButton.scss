@@ -26,4 +26,22 @@
             transform: translateY(-2px);
         }
     }
+
+    .auth-logout-btn {
+        transition: all 0.3s ease;
+        
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 77, 79, 0.3);
+        }
+    }
+
+    // Style cho thông tin user khi đã đăng nhập
+    .user-greeting {
+        color: #666;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 }

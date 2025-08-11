@@ -370,4 +370,25 @@
       }
     }
   }
+
+  // Styles for lesson items with click functionality
+  .lesson-item {
+    &:hover {
+      background-color: #f0f8ff !important;
+      border-radius: 6px;
+    }
+
+    &:active {
+      background-color: #e6f3ff !important;
+    }
+
+    .anticon-play-circle {
+      font-size: 16px;
+      transition: color 0.2s;
+    }
+
+    &:hover .anticon-play-circle {
+      color: #40a9ff !important;
+    }
+  }
 }

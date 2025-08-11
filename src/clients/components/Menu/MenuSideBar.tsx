@@ -1,163 +1,184 @@
-import { Drawer, Menu } from "antd";
+import { Drawer, Menu, Button, Divider } from "antd";
 import { useState, forwardRef, useImperativeHandle } from "react";
-import { AppstoreOutlined, MailOutlined, SettingOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, HomeOutlined, UserOutlined, LoginOutlined, LogoutOutlined, UserAddOutlined, SettingOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Link } from "react-router-dom";
+import { useAuth } from "../../../contexts/authcontext";
 
 type MenuItem = Required<MenuProps>['items'][number];
-
-const items: MenuItem[] = [
-    {
-        key: 'home',
-        icon: <HomeOutlined />,
-        label: (
-            <Link to="/">
-                Trang chủ
-            </Link>
-        )
-    },
-    {
-        key: 'profile',
-        icon: <UserOutlined />,
-        label: (
-            <Link to="/profile">
-                Profile
-            </Link>
-        )
-    },
-    {
-        key: '1',
-        icon: <MailOutlined />,
-        label: 'Navigation One',
-        children: [
-            { key: '11', label: 'Option 1' },
-            { key: '12', label: 'Option 2' },
-            { key: '13', label: 'Option 3' },
-            { key: '14', label: 'Option 4' },
-        ],
-    },
-    {
-        key: '2',
-        icon: <AppstoreOutlined />,
-        label: 'Navigation Two',
-        children: [
-            { key: '21', label: 'Option 1' },
-            { key: '22', label: 'Option 2' },
-            {
-                key: '23',
-                label: 'Submenu',
-                children: [
-                    { key: '231', label: 'Option 1' },
-                    { key: '232', label: 'Option 2' },
-                    { key: '233', label: 'Option 3' },
-                ],
-            },
-            {
-                key: '24',
-                label: 'Submenu 2',
-                children: [
-                    { key: '241', label: 'Option 1' },
-                    { key: '242', label: 'Option 2' },
-                    { key: '243', label: 'Option 3' },
-                ],
-            },
-        ],
-    },
-    {
-        key: '3',
-        icon: <SettingOutlined />,
-        label: 'Navigation Three',
-        children: [
-            { key: '31', label: 'Option 1' },
-            { key: '32', label: 'Option 2' },
-            { key: '33', label: 'Option 3' },
-            { key: '34', label: 'Option 4' },
-        ],
-    },
-];
-
-interface LevelKeysProps {
-    key?: string;
-    children?: LevelKeysProps[];
-}
 
 export type MenuSideBarRef = {
     showDrawer: () => void;
 };
 
-
-const getLevelKeys = (items1: LevelKeysProps[]) => {
-    const key: Record<string, number> = {};
-    const func = (items2: LevelKeysProps[], level = 1) => {
-        items2.forEach((item) => {
-            if (item.key) {
-                key[item.key] = level;
-            }
-            if (item.children) {
-                func(item.children, level + 1);
-            }
-        });
-    };
-    func(items1);
-    return key;
-};
-
-const levelKeys = getLevelKeys(items as LevelKeysProps[]);
-
 const MenuSideBar = forwardRef<MenuSideBarRef>((_, ref) => {
     const [open, setOpen] = useState(false);
+    const { isAuthenticated, user, logout } = useAuth();
 
     const showDrawer = () => setOpen(true);
     const closeDrawer = () => setOpen(false);
-
 
     useImperativeHandle(ref, () => ({
         showDrawer,
     }));
 
-    const [stateOpenKeys, setStateOpenKeys] = useState(['2', '23']);
-
-    const onOpenChange: MenuProps['onOpenChange'] = (openKeys) => {
-        const currentOpenKey = openKeys.find((key) => stateOpenKeys.indexOf(key) === -1);
-        // open
-        if (currentOpenKey !== undefined) {
-            const repeatIndex = openKeys
-                .filter((key) => key !== currentOpenKey)
-                .findIndex((key) => levelKeys[key] === levelKeys[currentOpenKey]);
-
-            setStateOpenKeys(
-                openKeys
-                    // remove repeat key
-                    .filter((_, index) => index !== repeatIndex)
-                    // remove current level all child
-                    .filter((key) => levelKeys[key] <= levelKeys[currentOpenKey]),
-            );
-        } else {
-            // close
-            setStateOpenKeys(openKeys);
-        }
+    const handleLogout = () => {
+        logout();
+        closeDrawer();
     };
 
-    return (<>
+    // Menu items cho authenticated users
+    const authenticatedItems: MenuItem[] = [
+        {
+            key: 'home',
+            icon: <HomeOutlined />,
+            label: (
+                <Link to="/" onClick={closeDrawer}>
+                    Trang chủ
+                </Link>
+            )
+        },
+        {
+            key: 'profile',
+            icon: <UserOutlined />,
+            label: (
+                <Link to="/profile" onClick={closeDrawer}>
+                    Profile
+                </Link>
+            )
+        },
+        {
+            key: 'courses',
+            icon: <AppstoreOutlined />,
+            label: 'Khóa học',
+            children: [
+                {
+                    key: 'all-courses',
+                    label: (
+                        <Link to="/list-course" onClick={closeDrawer}>
+                            Tất cả khóa học
+                        </Link>
+                    )
+                },
+                {
+                    key: 'my-courses',
+                    label: 'Khóa học của tôi'
+                },
+                {
+                    key: 'create-course',
+                    label: (
+                        <Link to="/create-course" onClick={closeDrawer}>
+                            Tạo khóa học
+                        </Link>
+                    )
+                },
+            ],
+        },
+        {
+            key: 'settings',
+            icon: <SettingOutlined />,
+            label: 'Cài đặt',
+        },
+    ];
+
+    // Menu items cho unauthenticated users
+    const unauthenticatedItems: MenuItem[] = [
+        {
+            key: 'home',
+            icon: <HomeOutlined />,
+            label: (
+                <Link to="/" onClick={closeDrawer}>
+                    Trang chủ
+                </Link>
+            )
+        },
+        {
+            key: 'courses',
+            icon: <AppstoreOutlined />,
+            label: (
+                <Link to="/list-course" onClick={closeDrawer}>
+                    Khóa học
+                </Link>
+            )
+        },
+        {
+            key: 'auth-divider',
+            type: 'divider',
+        },
+        {
+            key: 'login',
+            icon: <LoginOutlined />,
+            label: (
+                <Link to="/login" onClick={closeDrawer}>
+                    Đăng nhập
+                </Link>
+            )
+        },
+        {
+            key: 'register',
+            icon: <UserAddOutlined />,
+            label: (
+                <Link to="/register" onClick={closeDrawer}>
+                    Đăng ký
+                </Link>
+            )
+        },
+    ];
+
+    const items = isAuthenticated ? authenticatedItems : unauthenticatedItems;
+
+    const [stateOpenKeys, setStateOpenKeys] = useState(['courses']);
+
+    const onOpenChange: MenuProps['onOpenChange'] = (openKeys) => {
+        setStateOpenKeys(openKeys);
+    };
+
+    return (
         <Drawer
             title=""
-            placement="left" // 👈 Trượt từ trái
+            placement="left"
             onClose={closeDrawer}
             open={open}
             width={280}
         >
             <div>
+                {/* User Info Section */}
+                {isAuthenticated && user && (
+                    <div style={{ padding: '16px 0', textAlign: 'center' }}>
+                        <UserOutlined style={{ fontSize: '24px', marginBottom: '8px' }} />
+                        <div style={{ fontWeight: 'bold' }}>{user.fullName}</div>
+                        <div style={{ color: '#666', fontSize: '12px' }}>{user.email}</div>
+                        <Divider />
+                    </div>
+                )}
+
                 <Menu
                     mode="inline"
-                    defaultSelectedKeys={['231']}
+                    defaultSelectedKeys={['home']}
                     openKeys={stateOpenKeys}
                     onOpenChange={onOpenChange}
-                    style={{ width: 256 }}
+                    style={{ width: '100%', border: 'none' }}
                     items={items}
                 />
+
+                {/* Logout Button for authenticated users */}
+                {isAuthenticated && (
+                    <div style={{ padding: '16px' }}>
+                        <Divider />
+                        <Button
+                            type="primary"
+                            danger
+                            icon={<LogoutOutlined />}
+                            onClick={handleLogout}
+                            block
+                        >
+                            Đăng xuất
+                        </Button>
+                    </div>
+                )}
             </div>
-        </Drawer></>
-    )
+        </Drawer>
+    );
 });
 
 export default MenuSideBar;

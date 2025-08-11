@@ -1,14 +1,19 @@
 import { Avatar, Badge } from 'antd';
-import { UserOutlined, TeamOutlined, BookOutlined } from '@ant-design/icons';
+import { UserOutlined, TeamOutlined, BookOutlined, LogoutOutlined } from '@ant-design/icons';
 import { SettingOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Dropdown } from 'antd';
 import { useNavigate } from 'react-router-dom';
-
-
+import { useAuth } from '../../../contexts/authcontext';
 
 const UserAvatar = () => {
     const navigate = useNavigate();
+    const { isAuthenticated, user, logout } = useAuth();
+
+    // Chỉ hiển thị avatar khi đã đăng nhập
+    if (!isAuthenticated || !user) {
+        return null;
+    }
 
     const handleMenuClick = ({ key }: { key: string }) => {
         switch (key) {
@@ -21,6 +26,9 @@ const UserAvatar = () => {
             case 'instructor-profile':
                 navigate('/profile/instructor/1');
                 break;
+            case 'logout':
+                logout();
+                break;
             default:
                 break;
         }
@@ -29,7 +37,7 @@ const UserAvatar = () => {
     const items: MenuProps['items'] = [
         {
             key: '1',
-            label: 'My Account',
+            label: `${user.fullName}`,
             disabled: true,
         },
         {
@@ -64,8 +72,16 @@ const UserAvatar = () => {
             icon: <SettingOutlined />,
             extra: '⌘S',
         },
+        {
+            type: 'divider',
+        },
+        {
+            key: 'logout',
+            label: 'Đăng xuất',
+            icon: <LogoutOutlined />,
+            danger: true,
+        },
     ];
-
 
     return (
         <div className="user-avatar ml-5 mr-1">
@@ -75,7 +91,6 @@ const UserAvatar = () => {
                         <Avatar shape="square" icon={<UserOutlined />} />
                     </a>
                 </Dropdown>
-
             </Badge>
         </div>
     );

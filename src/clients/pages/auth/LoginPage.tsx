@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
     Form,
     Input,
@@ -7,7 +7,7 @@ import {
     Divider,
     Card,
     Checkbox,
-    message
+    Alert
 } from 'antd';
 import {
     UserOutlined,
@@ -20,44 +20,89 @@ import {
     UserAddOutlined,
     HomeOutlined
 } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../../contexts/authcontext';
+import type { LoginCredentials } from '../../../types/auth';
 import './Auth.scss';
 
 const { Title, Text } = Typography;
 
-interface LoginFormData {
-    email: string;
-    password: string;
+interface LoginFormData extends LoginCredentials {
     remember: boolean;
 }
 
 const LoginPage: React.FC = () => {
     const [form] = Form.useForm();
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const handleLogin = async (values: LoginFormData) => {
-        setLoading(true);
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
+    // Use AuthContext
+    const { login, loading, error, clearError, isAuthenticated } = useAuth();
 
-            console.log('Login values:', values);
-            message.success('Đăng nhập thành công!');
-
-            // Navigate to homepage or dashboard
-            navigate('/');
-        } catch {
-            message.error('Đăng nhập thất bại. Vui lòng thử lại!');
-        } finally {
-            setLoading(false);
+    // Redirect if already authenticated - ONLY ONCE
+    useEffect(() => {
+        if (isAuthenticated) {
+            console.log('✅ Already authenticated, redirecting...');
+            const from = (location.state as { from?: Location })?.from?.pathname || '/';
+            navigate(from, { replace: true });
         }
-    };
+    }, [isAuthenticated, navigate, location.state]);
 
-    const handleSocialLogin = (provider: 'google' | 'facebook') => {
-        message.info(`Đăng nhập bằng ${provider === 'google' ? 'Google' : 'Facebook'}`);
-        // Implement social login logic here
-    };
+    // Clear error when component mounts - ONLY ONCE
+    useEffect(() => {
+        clearError();
+    }, []); // Empty dependency array
+
+    // Handle login with useCallback to prevent re-creation
+    const handleLogin = useCallback(async (values: LoginFormData) => {
+        try {
+            clearError();
+
+            const credentials: LoginCredentials = {
+                username: values.username,
+                password: values.password
+            };
+
+            console.log('🔐 Login form submitted:', credentials.username);
+            const success = await login(credentials);
+
+            if (success) {
+                // Handle remember me
+                if (values.remember) {
+                    localStorage.setItem('skillforge_remember', 'true');
+                } else {
+                    localStorage.removeItem('skillforge_remember');
+                }
+
+                console.log('✅ Login successful, will redirect via useEffect');
+                // Don't navigate here - let useEffect handle it
+            }
+        } catch (err) {
+            console.error('❌ Login form error:', err);
+        }
+    }, [login, clearError]); // Only depend on login and clearError
+
+    // Handle social login
+    const handleSocialLogin = useCallback((provider: 'google' | 'facebook') => {
+        // TODO: Implement social login logic
+        console.log(`Social login with ${provider}`);
+    }, []);
+
+    // Show loading state
+    if (loading) {
+        return (
+            <div className="auth-page">
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '100vh'
+                }}>
+                    <div>Loading...</div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="auth-page">
@@ -135,6 +180,19 @@ const LoginPage: React.FC = () => {
                                 </Text>
                             </div>
 
+                            {/* Show error if exists */}
+                            {error && (
+                                <Alert
+                                    message="Lỗi đăng nhập"
+                                    description={error}
+                                    type="error"
+                                    showIcon
+                                    closable
+                                    onClose={clearError}
+                                    style={{ marginBottom: 16 }}
+                                />
+                            )}
+
                             {/* Social Login Buttons */}
                             <div className="social-login">
                                 <Button
@@ -143,6 +201,7 @@ const LoginPage: React.FC = () => {
                                     icon={<GoogleOutlined />}
                                     className="google-btn"
                                     onClick={() => handleSocialLogin('google')}
+                                    disabled={loading}
                                 >
                                     Đăng nhập bằng Google
                                 </Button>
@@ -152,6 +211,7 @@ const LoginPage: React.FC = () => {
                                     icon={<FacebookOutlined />}
                                     className="facebook-btn"
                                     onClick={() => handleSocialLogin('facebook')}
+                                    disabled={loading}
                                 >
                                     Đăng nhập bằng Facebook
                                 </Button>
@@ -169,9 +229,12 @@ const LoginPage: React.FC = () => {
                                 autoComplete="off"
                                 layout="vertical"
                                 size="large"
+                                initialValues={{
+                                    remember: localStorage.getItem('skillforge_remember') === 'true'
+                                }}
                             >
                                 <Form.Item
-                                    name="email"
+                                    name="username"
                                     label="Email"
                                     rules={[
                                         { required: true, message: 'Vui lòng nhập email!' },
@@ -182,6 +245,7 @@ const LoginPage: React.FC = () => {
                                         prefix={<UserOutlined />}
                                         placeholder="Nhập email của bạn"
                                         className="auth-input"
+                                        disabled={loading}
                                     />
                                 </Form.Item>
 
@@ -197,13 +261,16 @@ const LoginPage: React.FC = () => {
                                         prefix={<LockOutlined />}
                                         placeholder="Nhập mật khẩu"
                                         className="auth-input"
+                                        disabled={loading}
                                     />
                                 </Form.Item>
 
                                 <Form.Item>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <Form.Item name="remember" valuePropName="checked" noStyle>
-                                            <Checkbox>Ghi nhớ đăng nhập</Checkbox>
+                                            <Checkbox disabled={loading}>
+                                                Ghi nhớ đăng nhập
+                                            </Checkbox>
                                         </Form.Item>
                                         <Link to="/forgot-password" className="forgot-link">
                                             Quên mật khẩu?
@@ -220,7 +287,7 @@ const LoginPage: React.FC = () => {
                                         loading={loading}
                                         className="auth-submit-btn"
                                     >
-                                        Đăng nhập
+                                        {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                                     </Button>
                                 </Form.Item>
                             </Form>
