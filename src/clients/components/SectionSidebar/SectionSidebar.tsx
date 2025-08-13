@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Collapse,
     List,
@@ -56,6 +56,25 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
 }) => {
     const [activeKeys, setActiveKeys] = useState<string[]>(['1']);
 
+    // Tự động mở panel chứa lesson hiện tại
+    useEffect(() => {
+        if (currentLessonId && sections.length > 0) {
+            const sectionWithCurrentLesson = sections.find(section =>
+                section.lessons.some(lesson => lesson.id === currentLessonId)
+            );
+
+            if (sectionWithCurrentLesson) {
+                setActiveKeys(prevKeys => {
+                    const newKeys = [...prevKeys];
+                    if (!newKeys.includes(sectionWithCurrentLesson.id)) {
+                        newKeys.push(sectionWithCurrentLesson.id);
+                    }
+                    return newKeys;
+                });
+            }
+        }
+    }, [currentLessonId, sections]);
+
     const getLessonIcon = (lesson: Lesson) => {
         if (lesson.completed) {
             return <CheckCircleOutlined style={{ color: '#52c41a' }} />;
@@ -81,7 +100,9 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
             }
         };
 
-        const handleLessonClick = () => {
+        const handleLessonClick = (e: React.MouseEvent) => {
+            // Prevent event bubbling để không trigger collapse
+            e.stopPropagation();
             onLessonSelect(lesson);
         };
 
@@ -89,6 +110,7 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
             <List.Item
                 className={`lesson-item lesson-${getLessonStatus(lesson)}`}
                 onClick={handleLessonClick}
+                style={{ cursor: 'pointer' }}
             >
                 <div className="lesson-content">
                     <div className="lesson-header">
@@ -156,14 +178,32 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
     };
 
     const handleCollapseChange = (keys: string | string[]) => {
-        setActiveKeys(Array.isArray(keys) ? keys : [keys]);
+        const newKeys = Array.isArray(keys) ? keys : [keys];
+
+        // Nếu có lesson hiện tại, luôn giữ panel chứa lesson đó mở
+        if (currentLessonId && sections.length > 0) {
+            const sectionWithCurrentLesson = sections.find(section =>
+                section.lessons.some(lesson => lesson.id === currentLessonId)
+            );
+
+            if (sectionWithCurrentLesson && !newKeys.includes(sectionWithCurrentLesson.id)) {
+                newKeys.push(sectionWithCurrentLesson.id);
+            }
+        }
+
+        setActiveKeys(newKeys);
+    };
+
+    const handleExpandAll = () => {
+        const allKeys = sections.map(section => section.id);
+        setActiveKeys(allKeys);
     };
 
     return (
         <div className="section-sidebar">
             <div className="sidebar-header">
                 <Title level={4}>Nội dung khóa học</Title>
-                <Button type="text" size="small">
+                <Button type="text" size="small" onClick={handleExpandAll}>
                     Mở rộng tất cả
                 </Button>
             </div>

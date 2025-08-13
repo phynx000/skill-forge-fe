@@ -104,10 +104,18 @@
     transition: all 0.2s ease;
     border: 1px solid transparent;
     background: #fff;
+    user-select: none; // Prevent text selection when clicking
     
     &:hover {
       background: #f0f2f5;
       border-color: #d9d9d9;
+      transform: translateX(2px); // Subtle move effect
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    &:active {
+      transform: translateX(1px);
+      background: #e6f4ff;
     }
     
     &.lesson-current {
@@ -116,6 +124,11 @@
       
       .current-lesson-title {
         color: #1890ff;
+      }
+      
+      &:hover {
+        background: #d1efff;
+        transform: none; // No movement for current lesson
       }
     }
     

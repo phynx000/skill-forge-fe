@@ -14,7 +14,8 @@ import {
     Image,
     Spin,
     Alert,
-    Modal
+    Modal,
+    Tag
 } from 'antd';
 import {
     CheckOutlined,
@@ -25,12 +26,14 @@ import {
     BookOutlined,
     GlobalOutlined,
     ShoppingCartOutlined,
-    HeartOutlined
+    HeartOutlined,
+    TeamOutlined
 } from '@ant-design/icons';
 import './CourseDetail.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDetailCourse } from '../../../hooks/useDetailCourse';
 import { useLessonDetail } from '../../../hooks/useLessonDetail';
+import { useUserBio } from '../../../hooks/useUserBio';
 import useEnrollmentStatus from '../../../hooks/useEnrollmentStatus';
 import useEnrollment from '../../../hooks/useEnrollment';
 import VideoPlayer from '../../components/VideoPlayer/VideoPlayer';
@@ -76,6 +79,9 @@ const CourseDetailPage: React.FC = () => {
 
     // Extract course data
     const course = courseDetail?.data;
+
+    // Fetch instructor bio
+    const { userBio, loading: bioLoading } = useUserBio(course?.instructor?.id || null);
 
     // Check enrollment status when component mounts or courseId changes
     useEffect(() => {
@@ -172,7 +178,7 @@ const CourseDetailPage: React.FC = () => {
                                     <Space size="middle">
                                         <Avatar size={48} src={course.instructor.avatar} />
                                         <div>
-                                            <Text strong>{course.instructor.name}</Text>
+                                            <Text strong>{userBio?.data.fullName}</Text>
                                             <br />
                                             <Text type="secondary">{course.instructor.title}</Text>
                                         </div>
@@ -279,11 +285,106 @@ const CourseDetailPage: React.FC = () => {
                                     <p>{course.description}</p>
                                 </div>
                             </div>
+
+                            <Divider />
+
+                            {/* Thông tin giảng viên chi tiết */}
+                            <div className="instructor-bio">
+                                <Title level={3}>Về giảng viên</Title>
+                                {bioLoading ? (
+                                    <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                                        <Spin size="small" />
+                                        <div style={{ marginTop: 8 }}>Đang tải thông tin giảng viên...</div>
+                                    </div>
+                                ) : userBio?.data ? (
+                                    <Card className="instructor-details" bordered={false}>
+                                        <div className="instructor-header">
+                                            <Space size="large">
+                                                <Avatar size={64} src={course.instructor.avatar} />
+                                                <div>
+                                                    <Title level={4}>{userBio.data.fullName}</Title>
+                                                    <Text type="secondary">{course.instructor.title}</Text>
+                                                    {userBio.data.description && (
+                                                        <div style={{ marginTop: 8 }}>
+                                                            <Text>{userBio.data.description}</Text>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </Space>
+                                        </div>
+
+                                        {/* Kỹ năng */}
+                                        {userBio.data.skills && userBio.data.skills.length > 0 && (
+                                            <div style={{ marginTop: 24 }}>
+                                                <Title level={5}>Kỹ năng chuyên môn</Title>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                                    {userBio.data.skills.map((skill) => (
+                                                        <Tag
+                                                            key={skill.id}
+                                                            style={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '4px',
+                                                                padding: '4px 8px',
+                                                                borderRadius: '6px'
+                                                            }}
+                                                        >
+                                                            <img
+                                                                src={skill.logo}
+                                                                alt={skill.name}
+                                                                style={{ width: 16, height: 16 }}
+                                                            />
+                                                            {skill.name}
+                                                        </Tag>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Học vấn */}
+                                        {userBio.data.education && userBio.data.education.length > 0 && (
+                                            <div style={{ marginTop: 24 }}>
+                                                <Title level={5}>Học vấn</Title>
+                                                <List
+                                                    dataSource={userBio.data.education.slice(0, 3)} // Hiển thị tối đa 3 bằng cấp
+                                                    renderItem={(edu) => (
+                                                        <List.Item style={{ padding: '8px 0', border: 'none' }}>
+                                                            <Space>
+                                                                <TeamOutlined style={{ color: '#1890ff' }} />
+                                                                <div>
+                                                                    <Text strong>{edu.degree} {edu.major}</Text>
+                                                                    <br />
+                                                                    <Text type="secondary">{edu.institution} • {edu.year}</Text>
+                                                                </div>
+                                                            </Space>
+                                                        </List.Item>
+                                                    )}
+                                                />
+                                            </div>
+                                        )}
+                                    </Card>
+                                ) : (
+                                    <Card bordered={false}>
+                                        <div className="instructor-header">
+                                            <Space size="large">
+                                                <Avatar size={64} src={course.instructor.avatar} />
+                                                <div>
+                                                    <Title level={4}>{course.instructor.name}</Title>
+                                                    <Text type="secondary">{course.instructor.title}</Text>
+                                                    <div style={{ marginTop: 8 }}>
+                                                        <Text type="secondary">Thông tin chi tiết về giảng viên đang được cập nhật</Text>
+                                                    </div>
+                                                </div>
+                                            </Space>
+                                        </div>
+                                    </Card>
+                                )}
+                            </div>
                         </div>
-                    </Col>
+                    </Col >
 
                     {/* Phần bên phải - Sidebar */}
-                    <Col xs={24} lg={8}>
+                    <Col Col Col xs={24} lg={8} >
                         <div className="course-sidebar" style={{ position: 'sticky', top: '24px' }}>
                             <Card className="purchase-card">
                                 {/* Thumbnail */}
@@ -435,9 +536,9 @@ const CourseDetailPage: React.FC = () => {
                                 </div>
                             </Card>
                         </div>
-                    </Col>
-                </Row>
-            </div>
+                    </Col >
+                </Row >
+            </div >
 
             {/* Modal để hiển thị video preview */}
             <Modal
@@ -449,28 +550,29 @@ const CourseDetailPage: React.FC = () => {
                 style={{ top: 20 }}
                 destroyOnClose={true}
             >
-                {lessonLoading ? (
-                    <div style={{ textAlign: 'center', padding: '50px 0' }}>
-                        <Spin size="large" />
-                        <div style={{ marginTop: 16 }}>Đang tải video...</div>
-                    </div>
-                ) : lessonDetail?.data?.videoUrl ? (
-                    <VideoPlayer
-                        key={selectedLessonId}
-                        videoUrl={lessonDetail.data.videoUrl}
-                        autoPlay={true}
-                        onReady={() => console.log(`Preview bài học "${lessonDetail.data.title}" đã sẵn sàng!`)}
-                    />
-                ) : (
-                    <Alert
-                        message="Không thể tải video"
-                        description="Video preview không khả dụng cho bài học này."
-                        type="warning"
-                        showIcon
-                    />
-                )}
-            </Modal>
-        </div>
+                {
+                    lessonLoading ? (
+                        <div style={{ textAlign: 'center', padding: '50px 0' }} >
+                            <Spin size="large" />
+                            <div style={{ marginTop: 16 }}>Đang tải video...</div>
+                        </div >
+                    ) : lessonDetail?.data?.videoUrl ? (
+                        <VideoPlayer
+                            key={selectedLessonId}
+                            videoUrl={lessonDetail.data.videoUrl}
+                            autoPlay={true}
+                            onReady={() => console.log(`Preview bài học "${lessonDetail.data.title}" đã sẵn sàng!`)}
+                        />
+                    ) : (
+                        <Alert
+                            message="Không thể tải video"
+                            description="Video preview không khả dụng cho bài học này."
+                            type="warning"
+                            showIcon
+                        />
+                    )}
+            </Modal >
+        </div >
     );
 };
 

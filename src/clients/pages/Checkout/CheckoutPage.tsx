@@ -12,7 +12,9 @@ import {
     message,
     Space,
     Tag,
-    Breadcrumb
+    Breadcrumb,
+    Spin,
+    Alert
 } from 'antd';
 import {
     CreditCardOutlined,
@@ -23,6 +25,7 @@ import {
     WalletOutlined
 } from '@ant-design/icons';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useDetailCourse } from '../../../hooks/useDetailCourse';
 import './CheckoutPage.scss';
 
 const { Title, Text, Paragraph } = Typography;
@@ -42,39 +45,56 @@ const CheckoutPage: React.FC = () => {
 
     const [searchParams] = useSearchParams();
     const courseIdFromUrl = searchParams.get('courseId');
+    const courseId = courseIdFromUrl ? Number(courseIdFromUrl) : 0;
+
+    // Fetch course detail từ API nếu có courseId hợp lệ
+    const { courseDetail, loading: courseLoading, error: courseError } = useDetailCourse(courseId);
+
+    // Extract course data
+    const course = courseDetail?.data;
 
 
     useEffect(() => {
         if (courseIdFromUrl) {
-            // Set course data based on courseId from URL
             console.log('Course ID from URL:', courseIdFromUrl);
         }
     }, [courseIdFromUrl]);
-    // Mock data cho khóa học
-    const courseData = {
-        id: 1,
-        title: 'React TypeScript Masterclass - Từ Cơ Bản Đến Nâng Cao',
-        thumbnail: 'https://via.placeholder.com/300x180.png?text=React+Course',
-        originalPrice: 1500000,
-        discountPrice: 999000,
-        discountPercent: 34,
-        instructor: 'Nguyễn Văn A',
-        duration: '40 giờ',
-        lessons: 120
+
+    // Calculate discount percentage
+    const calculateDiscountPercent = () => {
+        if (!course || course.originalPrice === 0) return 0;
+        return Math.round(((course.originalPrice - course.discountPrice) / course.originalPrice) * 100);
     };
 
     const handleSubmit = async (values: CheckoutFormData) => {
+        if (!course) {
+            message.error('Không tìm thấy thông tin khóa học');
+            return;
+        }
+
         setLoading(true);
 
         try {
-            // Simulate API call
-            console.log('Checkout data:', values);
+            // Prepare checkout data
+            const checkoutData = {
+                ...values,
+                courseId: courseId,
+                courseName: course.title,
+                totalAmount: course.discountPrice || course.originalPrice,
+                instructor: course.instructor.name
+            };
 
-            // Mock API delay
+            console.log('Checkout data:', checkoutData);
+
+            // Mock API delay - replace với actual API call
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            message.success('Mua khóa học thành công! Bạn sẽ nhận được email xác nhận trong vài phút.');
+            message.success(`Mua khóa học "${course.title}" thành công! Bạn sẽ nhận được email xác nhận trong vài phút.`);
             form.resetFields();
+
+            // TODO: Redirect to success page or course learning page
+            // navigate(`/course/${courseId}/learn`);
+
         } catch {
             message.error('Có lỗi xảy ra khi mua khóa học. Vui lòng thử lại!');
         } finally {
@@ -89,6 +109,39 @@ const CheckoutPage: React.FC = () => {
         }).format(price);
     };
 
+    // Handle loading state
+    if (courseLoading) {
+        return (
+            <div className="checkout-page">
+                <div style={{ textAlign: 'center', padding: '100px 0' }}>
+                    <Spin size="large" />
+                    <div style={{ marginTop: 16 }}>Đang tải thông tin khóa học...</div>
+                </div>
+            </div>
+        );
+    }
+
+    // Handle error state
+    if (courseError || !course) {
+        return (
+            <div className="checkout-page">
+                <div style={{ padding: '50px 0' }}>
+                    <Alert
+                        message="Lỗi"
+                        description={courseError || "Không tìm thấy thông tin khóa học"}
+                        type="error"
+                        showIcon
+                        action={
+                            <Button type="primary" onClick={() => window.history.back()}>
+                                Quay lại
+                            </Button>
+                        }
+                    />
+                </div>
+            </div>
+        );
+    }
+
     const paymentOptions = [
         {
             value: 'bank_transfer',
@@ -98,9 +151,9 @@ const CheckoutPage: React.FC = () => {
         },
         {
             value: 'vnpay',
-            label: 'VNPay (MoMo, Ví điện tử)',
+            label: 'VNPay',
             icon: <WalletOutlined />,
-            description: 'Thanh toán qua VNPay - Hỗ trợ MoMo, ZaloPay, ShopeePay'
+            description: 'Thanh toán qua VNPay '
         },
         {
             value: 'credit_card',
@@ -124,6 +177,11 @@ const CheckoutPage: React.FC = () => {
                         <Link to="/list-course">
                             <BookOutlined />
                             <span>Khóa học</span>
+                        </Link>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                        <Link to={`/course-detail/${courseId}`}>
+                            {course.title.length > 50 ? `${course.title.substring(0, 50)}...` : course.title}
                         </Link>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
@@ -209,7 +267,7 @@ const CheckoutPage: React.FC = () => {
                             {paymentMethod === 'vnpay' && (
                                 <Card size="small" className="payment-details">
                                     <Title level={5}>Thanh toán VNPay:</Title>
-                                    <p>Bạn sẽ được chuyển hướng đến cổng thanh toán VNPay để chọn phương thức: MoMo, ZaloPay, ShopeePay, thẻ ngân hàng.</p>
+                                    <p>Bạn sẽ được chuyển hướng đến cổng thanh toán VNPay.</p>
                                 </Card>
                             )}
 
@@ -231,21 +289,21 @@ const CheckoutPage: React.FC = () => {
                                 <Image
                                     width={80}
                                     height={60}
-                                    src={courseData.thumbnail}
-                                    alt={courseData.title}
+                                    src={course.thumbnailUrl || 'https://via.placeholder.com/300x180.png?text=Course'}
+                                    alt={course.title}
                                     preview={false}
                                 />
                             </div>
                             <div className="course-details">
                                 <Title level={5} className="course-title">
-                                    {courseData.title}
+                                    {course.title}
                                 </Title>
                                 <div className="course-meta">
-                                    <Text type="secondary">Giảng viên: {courseData.instructor}</Text>
+                                    <Text type="secondary">Giảng viên: {course.instructor.name}</Text>
                                     <br />
                                     <Space size={[0, 8]} wrap>
-                                        <Tag color="blue">{courseData.duration}</Tag>
-                                        <Tag color="green">{courseData.lessons} bài học</Tag>
+                                        <Tag color="blue">{course.duration}</Tag>
+                                        <Tag color="green">{course.lessonCount} bài học</Tag>
                                     </Space>
                                 </div>
                             </div>
@@ -257,20 +315,22 @@ const CheckoutPage: React.FC = () => {
                             <div className="price-row">
                                 <Text>Giá gốc:</Text>
                                 <Text delete type="secondary">
-                                    {formatPrice(courseData.originalPrice)}
+                                    {formatPrice(course.originalPrice)}
                                 </Text>
                             </div>
-                            <div className="price-row">
-                                <Text>Giảm giá ({courseData.discountPercent}%):</Text>
-                                <Text type="success">
-                                    -{formatPrice(courseData.originalPrice - courseData.discountPrice)}
-                                </Text>
-                            </div>
+                            {course.discountPrice < course.originalPrice && (
+                                <div className="price-row">
+                                    <Text>Giảm giá ({calculateDiscountPercent()}%):</Text>
+                                    <Text type="success">
+                                        -{formatPrice(course.originalPrice - course.discountPrice)}
+                                    </Text>
+                                </div>
+                            )}
                             <Divider style={{ margin: '12px 0' }} />
                             <div className="price-row total">
                                 <Title level={4}>Tổng cộng:</Title>
                                 <Title level={4} type="danger">
-                                    {formatPrice(courseData.discountPrice)}
+                                    {formatPrice(course.discountPrice || course.originalPrice)}
                                 </Title>
                             </div>
                         </div>
@@ -285,7 +345,8 @@ const CheckoutPage: React.FC = () => {
                             onClick={() => form.submit()}
                             className="checkout-button"
                         >
-                            {loading ? 'Đang xử lý...' : 'Mua ngay'}
+                            {loading ? 'Đang xử lý...' :
+                                (course.originalPrice === 0 || course.discountPrice === 0) ? 'Đăng ký miễn phí' : 'Mua ngay'}
                         </Button>
 
                         <div className="security-note">

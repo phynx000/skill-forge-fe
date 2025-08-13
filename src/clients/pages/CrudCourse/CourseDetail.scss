@@ -391,4 +391,26 @@
       color: #40a9ff !important;
     }
   }
+
+  // Instructor bio styles
+  .instructor-bio {
+    .instructor-details {
+      background: #fafafa;
+      border: 1px solid #f0f0f0;
+      
+      .instructor-header {
+        margin-bottom: 16px;
+      }
+      
+      .ant-tag {
+        margin-bottom: 8px;
+        border: 1px solid #d9d9d9;
+        background: white;
+        
+        img {
+          object-fit: contain;
+        }
+      }
+    }
+  }
 }
